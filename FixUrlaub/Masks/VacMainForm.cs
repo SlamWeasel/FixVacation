@@ -1,4 +1,4 @@
-﻿using FixUrlaub.Util;
+using FixUrlaub.Util;
 using System;
 using System.Windows.Forms;
 using System.Drawing;
@@ -50,7 +50,7 @@ namespace FixUrlaub.Masks
         {
             Language lang = vsf.cfg.CurrentLanguage;
 
-
+            #region Icons
             SettingsIcon = new Label()
             {
                 Name = "SettingsIcon",
@@ -73,6 +73,11 @@ namespace FixUrlaub.Masks
                         e.Graphics.DrawImage(bmp, rect, 0, 0, 350, 350, GraphicsUnit.Point, attr);  // Using Point as Unit, so it renders it out smoothly
                     }
                 };
+            SettingsIcon.Click += (object sender, EventArgs e) =>
+                {
+                    vsf.ShowDialog();
+                    vsf.BringToFront();
+                };
             ExitIcon = new Label()
             {
                 Name = "ExitIcon",
@@ -82,19 +87,23 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerBoldFam, 20f),
                 ForeColor = vcf.AppliedTheme.Secondary
             };
+            ExitIcon.Click += (object sender, EventArgs e) => this.Close();
 
 
             Controls.Add(SettingsIcon);
             Controls.Add(ExitIcon);
+            #endregion
 
 
+            #region Lablels and Texts
             NameLine = new Label()
             {
                 Text = lang.NameLine,
                 Name = lang.NameLine,
                 Location = new Point(Width / 2 - 50, 30),
                 Font = new Font(FrutigerFam, 12),
-                AutoSize = true
+                AutoSize = true,
+                ForeColor = vsf.AppliedTheme.Secondary
             };
             BirthLine = new Label()
             {
@@ -102,7 +111,8 @@ namespace FixUrlaub.Masks
                 Name = lang.BornLine,
                 Location = new Point(Width / 2 - 50, 70),
                 Font = new Font(FrutigerFam, 12),
-                AutoSize = true
+                AutoSize = true,
+                ForeColor = vsf.AppliedTheme.Secondary
             };
             IDLine = new Label()
             {
@@ -110,7 +120,8 @@ namespace FixUrlaub.Masks
                 Name = lang.UserIDLine,
                 Location = new Point((int)Math.Round(Width / 1.25f - 50), 70),
                 Font = new Font(FrutigerFam, 12),
-                AutoSize = true
+                AutoSize = true,
+                ForeColor = vsf.AppliedTheme.Secondary
             };
             DepLine = new Label()
             {
@@ -118,7 +129,8 @@ namespace FixUrlaub.Masks
                 Name = lang.DepartmentLine,
                 Location = new Point(Width / 2 - 50, 110),
                 Font = new Font(FrutigerFam, 12),
-                AutoSize = true
+                AutoSize = true,
+                ForeColor = vsf.AppliedTheme.Secondary
             };
 
             YearAnnouncement = new Label()
@@ -127,7 +139,8 @@ namespace FixUrlaub.Masks
                 Name = lang.YearTag,
                 Location = new Point(35, 145),
                 Font = new Font(FrutigerBoldFam, 12),
-                AutoSize = true
+                AutoSize = true,
+                ForeColor = vsf.AppliedTheme.Secondary
             };
 
             Controls.Add(NameLine);
@@ -136,13 +149,15 @@ namespace FixUrlaub.Masks
             Controls.Add(DepLine);
 
             Controls.Add(YearAnnouncement);
+            #endregion
 
 
+            #region Textfields
             NameLineField = new SeeThroughTextBox(this)
             {
                 Name = "NameLineField",
                 ForeColor = vcf.AppliedTheme.Tertiary,
-                Bounds = new Rectangle(NameLine.Location.X + NameLine.Width, 23, Width / 2 - 30, 20)
+                Bounds = new Rectangle(NameLine.Location.X + NameLine.Width, 23, Width - (NameLine.Location.X + NameLine.Width) - 30, 20)
             };
             BirthLineField = new DateTimePicker()
             {
@@ -169,7 +184,7 @@ namespace FixUrlaub.Masks
                 Text = "",                                                  // TODO: Put Department in here
                 Name = "DepLineField",
                 ForeColor = vcf.AppliedTheme.Tertiary,
-                Bounds = new Rectangle(DepLine.Location.X + DepLine.Width, 103, Width / 2 - 30, 20)
+                Bounds = new Rectangle(DepLine.Location.X + DepLine.Width, 103, Width - (DepLine.Location.X + DepLine.Width) - 30, 20)
             };
             CurrentYearField = new SeeThroughTextBox(this)
             {
@@ -196,6 +211,15 @@ namespace FixUrlaub.Masks
                 AutoSize = true,
                 TextAlign = ContentAlignment.BottomLeft
             };
+            Controls.Add(TakenVacLabel);
+            LeftVacField = new SeeThroughTextBox(this)
+            {
+                Text = "",                                                  // TODO: Put Vacation Data in here
+                Name = "LeftVacField",
+                ForeColor = ForeColor = vcf.AppliedTheme.Tertiary,
+                Bounds = new Rectangle(500, 190, 100, 20)
+            };
+            Controls.Add(LeftVacField);
 
 
             Controls.Add(NameLineField);
@@ -204,7 +228,7 @@ namespace FixUrlaub.Masks
             Controls.Add(DepLineField);
 
             Controls.Add(CurrentYearField);
-            Controls.Add(TakenVacLabel);
+            #endregion
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -248,6 +272,9 @@ namespace FixUrlaub.Masks
                 200 + (13 * SizeRatio),
                 Width,
                 200 + (13 * SizeRatio));
+            e.Graphics.DrawLine(new Pen(AppliedTheme.Secondary, 6 + (SizeRatio / 2)),
+                new Point(600 + (60 * SizeRatio), DepLine.Location.Y + DepLine.Height + 10 - (SizeRatio / 5)),
+                new Point(600 + (60 * SizeRatio), 350 + (25 * SizeRatio)));
             #endregion
 
             #region Text Lines
