@@ -1,0 +1,10 @@
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\bin\Debug\FixUrlaub.exe.config
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\bin\Debug\FixUrlaub.exe
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\bin\Debug\FixUrlaub.pdb
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.csproj.AssemblyReference.cache
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.csproj.SuggestedBindingRedirects.cache
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.csproj.CoreCompileInputs.cache
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.exe
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.pdb
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.VacPaperForm.resources
+C:\Users\evlehmann\source\repos\FixUrlaub\FixUrlaub\obj\Debug\FixUrlaub.csproj.GenerateResource.cache
