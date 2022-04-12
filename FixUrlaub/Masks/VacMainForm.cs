@@ -25,9 +25,36 @@ namespace FixUrlaub.Masks
         private float WidthRatio = 1;
 
         #region Controls
-        public Label SettingsIcon, ExitIcon, NameLine, BirthLine, IDLine, DepLine, YearAnnouncement, TakenVacLabel;
-        public SeeThroughTextBox NameLineField, IDLineField, DepLineField, CurrentYearField, TakenVacField, LeftVacField;
-        public DateTimePicker BirthLineField;
+        public CheckBox
+            YearCheck,
+            SpecCheck,
+            UnpaidCheck;
+        public Label
+            SettingsIcon,
+            ExitIcon,
+            NameLine,
+            BirthLine,
+            IDLine,
+            DepLine,
+            YearAnnouncement,
+            TakenVacLabel,
+            AnnounceLabel,
+            YearVacLabel,
+            SpecVacLabel,
+            UnpaidVacLabel,
+            ReasonLabel,
+            FromLabel, ToLabel;
+        public SeeThroughTextBox 
+            NameLineField, 
+            IDLineField, 
+            DepLineField, 
+            CurrentYearField, 
+            TakenVacField, 
+            LeftVacField,
+            Res1, Res2, Res3,
+            ReasonField;
+        public DateTimePicker BirthLineField, From1, From2, From3, To1, To2, To3;
+        public Button Submit, Calendar, Approve;
         #endregion
 
         public VacMainForm() : base("VacMainForm")
@@ -51,6 +78,13 @@ namespace FixUrlaub.Masks
             Language lang = vsf.cfg.CurrentLanguage;
 
             #region Icons
+            ToolTip SettingsTip = new ToolTip()
+            {
+                AutoPopDelay = 7500,
+                InitialDelay = 500,
+                ReshowDelay = 200,
+                ToolTipTitle = lang.Settings
+            };
             SettingsIcon = new Label()
             {
                 Name = "SettingsIcon",
@@ -78,6 +112,13 @@ namespace FixUrlaub.Masks
                     vsf.ShowDialog();
                     vsf.BringToFront();
                 };
+            SettingsTip.SetToolTip(SettingsIcon, lang.SettingsDesc);
+            ToolTip ExitTip = new ToolTip()
+            {
+                AutoPopDelay = 7500,
+                InitialDelay = 500,
+                ReshowDelay = 200
+            };
             ExitIcon = new Label()
             {
                 Name = "ExitIcon",
@@ -88,6 +129,7 @@ namespace FixUrlaub.Masks
                 ForeColor = vcf.AppliedTheme.Secondary
             };
             ExitIcon.Click += (object sender, EventArgs e) => this.Close();
+            ExitTip.SetToolTip(ExitIcon, lang.Close);
 
 
             Controls.Add(SettingsIcon);
@@ -95,7 +137,7 @@ namespace FixUrlaub.Masks
             #endregion
 
 
-            #region Lablels and Texts
+            #region Labels and Texts
             NameLine = new Label()
             {
                 Text = lang.NameLine,
@@ -162,13 +204,13 @@ namespace FixUrlaub.Masks
             BirthLineField = new DateTimePicker()
             {
                 Name = "BirthLineField",
-                Bounds = new Rectangle((Width / 2 - 50) + BirthLine.Width, 63, IDLine.Location.X - ((Width / 2 - 50) + BirthLine.Width), 20),
+                Bounds = new Rectangle((Width / 2 - 50) + BirthLine.Width, 60, IDLine.Location.X - ((Width / 2 - 50) + BirthLine.Width), 20),
                 CalendarFont = new Font(FrutigerFam, 12),
                 Font = new Font(FrutigerFam, 12),
                 CalendarForeColor = vcf.AppliedTheme.Secondary,
                 CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
                 CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
                 CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
                 Value = DateTime.Today.AddDays(30),                         // TODO: Put in Birthday Date Automatically
                 Format = DateTimePickerFormat.Short
@@ -212,14 +254,288 @@ namespace FixUrlaub.Masks
                 TextAlign = ContentAlignment.BottomLeft
             };
             Controls.Add(TakenVacLabel);
+            AnnounceLabel = new Label()
+            {
+                Text = lang.Announcement,
+                Name = "AnnounceLabel",
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(35, TakenVacLabel.Location.Y + 30),
+                Font = new Font(FrutigerBoldFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(AnnounceLabel);
+            YearVacLabel = new Label()
+            {
+                Text = lang.YearVac,
+                Name = "YearVaclabel",
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(35, AnnounceLabel.Location.Y + 30),
+                Font = new Font(FrutigerFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(YearVacLabel);
+            YearCheck = new CheckBox()
+            {
+                Name = "YearCheck",
+                Checked = true,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = vcf.AppliedTheme.Primary,
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Bounds = new Rectangle(24, YearVacLabel.Location.Y + 3, 12, 12)
+            };
+            YearCheck.CheckedChanged += OnYearCheckChanged;
+            Controls.Add(YearCheck);
+            SpecVacLabel = new Label()
+            {
+                Text = lang.SpecVac,
+                Name = "SpecVacLabel",
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(35, YearVacLabel.Location.Y + 25),
+                Font = new Font(FrutigerFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(SpecVacLabel);
+            SpecCheck = new CheckBox()
+            {
+                Name = "SpecCheck",
+                Checked = false,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = vcf.AppliedTheme.Primary,
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Bounds = new Rectangle(24, SpecVacLabel.Location.Y + 3, 12, 12)
+            };
+            SpecCheck.CheckedChanged += OnSpecCheckChanged;
+            Controls.Add(SpecCheck);
+            UnpaidVacLabel = new Label()
+            {
+                Text = lang.UnpaidVac,
+                Name = "UnpaidVacLabel",
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(35, SpecVacLabel.Location.Y + 25),
+                Font = new Font(FrutigerFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(UnpaidVacLabel);
+            UnpaidCheck = new CheckBox()
+            {
+                Name = "UnpaidCheck",
+                Checked = false,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = vcf.AppliedTheme.Primary,
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Bounds = new Rectangle(24, UnpaidVacLabel.Location.Y + 3, 12, 12)
+            };
+            UnpaidCheck.CheckedChanged += OnUnpaidCheckChanged;
+            Controls.Add(UnpaidCheck);
+            ReasonLabel = new Label()
+            {
+                Text = lang.Reason,
+                Name = "ReasonLabel",
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(35, UnpaidVacLabel.Location.Y + 55),
+                Font = new Font(FrutigerFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(ReasonLabel);
+
             LeftVacField = new SeeThroughTextBox(this)
             {
                 Text = "",                                                  // TODO: Put Vacation Data in here
-                Name = "LeftVacField",
-                ForeColor = ForeColor = vcf.AppliedTheme.Tertiary,
-                Bounds = new Rectangle(500, 190, 100, 20)
+                Name = "LeftVacField-Left",
+                ForeColor = vcf.AppliedTheme.Tertiary,
+                Bounds = new Rectangle(500, 190, 100, 20),
+                TextAlign = HorizontalAlignment.Center
             };
             Controls.Add(LeftVacField);
+            Res1 = LeftVacField.Clone();
+            Res1.Location = new Point(500, YearVacLabel.Location.Y);
+            Res1.Name = "LeftVacField-Year";
+            Res1.TextChanged += OnResTextChange;
+            Controls.Add(Res1);
+            Res2 = LeftVacField.Clone();
+            Res2.Location = new Point(500, SpecVacLabel.Location.Y);
+            Res2.Name = "LeftVacField-Spec";
+            Res2.TextChanged += OnResTextChange;
+            Controls.Add(Res2);
+            Res3 = LeftVacField.Clone();
+            Res3.Location = new Point(500, UnpaidVacLabel.Location.Y);
+            Res3.Name = "LeftVacField-Unpaid";
+            Res3.TextChanged += OnResTextChange;
+            Controls.Add(Res3);
+
+            FromLabel = new Label()
+            {
+                Text = lang.From,
+                Name = lang.From,
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(225, YearVacLabel.Location.Y),
+                Font = new Font(FrutigerFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(FromLabel);
+            Label FromLabel_ = new Label()
+            {
+                Text = FromLabel.Text,
+                Name = FromLabel.Name,
+                ForeColor = FromLabel.ForeColor,
+                Location = new Point(FromLabel.Location.X, SpecVacLabel.Location.Y),
+                Font = FromLabel.Font,
+                AutoSize = true
+            };
+            Controls.Add(FromLabel_);
+            Label FromLabel__ = new Label()
+            {
+                Text = FromLabel.Text,
+                Name = FromLabel.Name,
+                ForeColor = FromLabel.ForeColor,
+                Location = new Point(FromLabel.Location.X, UnpaidVacLabel.Location.Y),
+                Font = FromLabel.Font,
+                AutoSize = true
+            };
+            Controls.Add(FromLabel__);
+
+
+            From1 = new DateTimePicker()
+            {
+                Name = "From1",
+                Bounds = new Rectangle(FromLabel.Location.X + FromLabel.Width, FromLabel.Location.Y, 80, 15),
+                CalendarFont = new Font(FrutigerFam, 8),
+                Font = new Font(FrutigerFam, 8),
+                CalendarForeColor = vcf.AppliedTheme.Secondary,
+                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
+                CalendarMonthBackground = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
+                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                Value = DateTime.Now,
+                Format = DateTimePickerFormat.Short
+            };
+            From1.ValueChanged += OnDatePicker_DateChanged1;
+            Controls.Add(From1);
+            From2 = new DateTimePicker()
+            {
+                Name = "From2",
+                Bounds = new Rectangle(FromLabel_.Location.X + FromLabel_.Width, FromLabel_.Location.Y, 80, 15),
+                CalendarFont = new Font(FrutigerFam, 8),
+                Font = new Font(FrutigerFam, 8),
+                CalendarForeColor = vcf.AppliedTheme.Secondary,
+                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
+                CalendarMonthBackground = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
+                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                Value = DateTime.Now,
+                Format = DateTimePickerFormat.Short,
+                Enabled = false
+            };
+            From2.ValueChanged += OnDatePicker_DateChanged2;
+            From2.MouseUp += OnDisabledDatePickerMouseUp;
+            Controls.Add(From2);
+            From3 = new DateTimePicker()
+            {
+                Name = "From3",
+                Bounds = new Rectangle(FromLabel__.Location.X + FromLabel__.Width, FromLabel__.Location.Y, 80, 15),
+                CalendarFont = new Font(FrutigerFam, 8),
+                Font = new Font(FrutigerFam, 8),
+                CalendarForeColor = vcf.AppliedTheme.Secondary,
+                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
+                CalendarMonthBackground = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
+                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                Value = DateTime.Now,
+                Format = DateTimePickerFormat.Short,
+                Enabled = false
+            };
+            From3.ValueChanged += OnDatePicker_DateChanged3;
+            Controls.Add(From3);
+            ToLabel = new Label()
+            {
+                Text = lang.To,
+                Name = lang.To,
+                ForeColor = vcf.AppliedTheme.Secondary,
+                Location = new Point(From1.Location.X + From1.Width, YearVacLabel.Location.Y),
+                Font = new Font(FrutigerFam, 12),
+                AutoSize = true
+            };
+            Controls.Add(ToLabel);
+            Label ToLabel_ = new Label()
+            {
+                Text = ToLabel.Text,
+                Name = ToLabel.Name,
+                ForeColor = ToLabel.ForeColor,
+                Location = new Point(From2.Location.X + From2.Width, SpecVacLabel.Location.Y),
+                Font = ToLabel.Font,
+                AutoSize = true
+            };
+            Controls.Add(ToLabel_);
+            Label ToLabel__ = new Label()
+            {
+                Text = ToLabel.Text,
+                Name = ToLabel.Name,
+                ForeColor = ToLabel.ForeColor,
+                Location = new Point(From3.Location.X + From3.Width, UnpaidVacLabel.Location.Y),
+                Font = ToLabel.Font,
+                AutoSize = true
+            };
+            Controls.Add(ToLabel__);
+            To1 = new DateTimePicker()
+            {
+                Name = "To1",
+                Bounds = new Rectangle(ToLabel.Location.X + ToLabel.Width, ToLabel.Location.Y, 80, 15),
+                CalendarFont = new Font(FrutigerFam, 8),
+                Font = new Font(FrutigerFam, 8),
+                CalendarForeColor = vcf.AppliedTheme.Secondary,
+                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
+                CalendarMonthBackground = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
+                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                Value = DateTime.Now,
+                Format = DateTimePickerFormat.Short
+            };
+            To1.ValueChanged += OnDatePicker_DateChanged1;
+            Controls.Add(To1);
+            To2 = new DateTimePicker()
+            {
+                Name = "To2",
+                Bounds = new Rectangle(ToLabel_.Location.X + ToLabel_.Width, ToLabel_.Location.Y, 80, 15),
+                CalendarFont = new Font(FrutigerFam, 8),
+                Font = new Font(FrutigerFam, 8),
+                CalendarForeColor = vcf.AppliedTheme.Secondary,
+                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
+                CalendarMonthBackground = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
+                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                Value = DateTime.Now,
+                Format = DateTimePickerFormat.Short,
+                Enabled = false
+            };
+            To2.ValueChanged += OnDatePicker_DateChanged2;
+            Controls.Add(To2);
+            To3 = new DateTimePicker()
+            {
+                Name = "To3",
+                Bounds = new Rectangle(ToLabel__.Location.X + ToLabel__.Width, ToLabel__.Location.Y, 80, 15),
+                CalendarFont = new Font(FrutigerFam, 8),
+                Font = new Font(FrutigerFam, 8),
+                CalendarForeColor = vcf.AppliedTheme.Secondary,
+                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
+                CalendarMonthBackground = vcf.AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
+                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                Value = DateTime.Now,
+                Format = DateTimePickerFormat.Short,
+                Enabled = false
+            };
+            To3.ValueChanged += OnDatePicker_DateChanged3;
+            Controls.Add(To3);
+            ReasonField = new SeeThroughTextBox(this)
+            {
+                Text = "",
+                Name = "ReasonField",
+                ForeColor = vcf.AppliedTheme.Tertiary,
+                Bounds = new Rectangle(ReasonLabel.Location.X + ReasonLabel.Width, ReasonLabel.Location.Y, Width - (ReasonLabel.Location.X + ReasonLabel.Width) - 50, 20),
+                TextAlign = HorizontalAlignment.Left
+            };
+            Controls.Add(ReasonField);
+
 
 
             Controls.Add(NameLineField);
@@ -229,6 +545,159 @@ namespace FixUrlaub.Masks
 
             Controls.Add(CurrentYearField);
             #endregion
+
+
+            #region Buttons
+            Submit = new Button()
+            {
+                Text = lang.Submit,
+                Name = "Submit",
+                ForeColor = AppliedTheme.Secondary,
+                BackColor = ColorTheme.AddColor(AppliedTheme.Primary, Color.FromArgb(20, 20, 20)),
+                Font = new Font(FrutigerBoldFam, 12),
+                FlatStyle = FlatStyle.Popup,
+                Bounds = new Rectangle(50, 450, 150, 40),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            Submit.Click += OnSubmitClick;
+            Submit.MouseEnter += OnColorInvert;
+            Submit.MouseLeave += OnColorInvert;
+            Calendar = new Button()
+            {
+                Text = lang.Calendar,
+                Name = "Calendar",
+                ForeColor = AppliedTheme.Secondary,
+                BackColor = ColorTheme.AddColor(AppliedTheme.Primary, Color.FromArgb(20, 20, 20)),
+                Font = new Font(FrutigerBoldFam, 12),
+                FlatStyle = FlatStyle.Popup,
+                Bounds = new Rectangle(275, 450, 150, 40),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            Calendar.Click += OnCalendarClick;
+            Calendar.MouseEnter += OnColorInvert;
+            Calendar.MouseLeave += OnColorInvert;
+
+            // TODO: Disable Button if user is not TeamLeader
+            Approve = new Button()
+            {
+                Text = lang.Approve,
+                Name = "Approve",
+                ForeColor = AppliedTheme.Secondary,
+                BackColor = ColorTheme.AddColor(AppliedTheme.Primary, Color.FromArgb(20, 20, 20)),
+                Font = new Font(FrutigerBoldFam, 12),
+                FlatStyle = FlatStyle.Popup,
+                Bounds = new Rectangle(500, 450, 150, 40),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            Approve.Click += OnApproveClick;
+            Approve.MouseEnter += OnColorInvert;
+            Approve.MouseLeave += OnColorInvert;
+
+            Controls.Add(Submit);
+            Controls.Add(Calendar);
+            Controls.Add(Approve);
+            #endregion
+        }
+
+        private void OnColorInvert(object sender, EventArgs e)
+        {
+            ((Control)sender).BackColor = ColorTheme.InvertColor(((Control)sender).BackColor);
+        }
+        private void OnApproveClick(object sender, EventArgs e)
+        {
+            
+        }
+        private void OnCalendarClick(object sender, EventArgs e)
+        {
+            
+        }
+        private void OnSubmitClick(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void OnResTextChange(object sender, EventArgs e)
+        {
+            Invalidate();
+        }
+        private void OnYearCheckChanged(object sender, EventArgs e)
+        {
+            From1.Enabled = ((CheckBox)sender).Checked;
+            To1.Enabled = ((CheckBox)sender).Checked;
+        }
+        private void OnSpecCheckChanged(object sender, EventArgs e)
+        {
+            From2.Enabled = ((CheckBox)sender).Checked;
+            To2.Enabled = ((CheckBox)sender).Checked;
+        }
+        private void OnUnpaidCheckChanged(object sender, EventArgs e)
+        {
+            From3.Enabled = ((CheckBox)sender).Checked;
+            To3.Enabled = ((CheckBox)sender).Checked;
+        }
+        private void OnDisabledDatePickerMouseUp(object sender, MouseEventArgs e)
+        {
+            ((Control)sender).Enabled = true;
+        }
+        private void OnDatePicker_DateChanged1(object sender, EventArgs e)
+        {
+            try
+            {
+                int days = 1;
+                for (int i = 0; To1.Value.Subtract(From1.Value.AddDays(i)).Days > 0; i++)
+                {
+                    if (From1.Value.AddDays(i).DayOfWeek == DayOfWeek.Sunday || From1.Value.AddDays(i).DayOfWeek == DayOfWeek.Saturday)
+                        continue;
+                    days++;
+                }
+                Res1.Text = days.ToString();
+
+                Invalidate();
+            }
+            catch
+            {
+                Res1.Text = "Fehler";
+            }
+        }
+        private void OnDatePicker_DateChanged2(object sender, EventArgs e)
+        {
+            try
+            {
+                int days = 1;
+                for (int i = 0; To2.Value.Subtract(From2.Value.AddDays(i)).Days > 0; i++)
+                {
+                    if (From2.Value.AddDays(i).DayOfWeek == DayOfWeek.Sunday || From2.Value.AddDays(i).DayOfWeek == DayOfWeek.Saturday)
+                        continue;
+                    days++;
+                }
+                Res2.Text = days.ToString();
+
+                Invalidate();
+            }
+            catch
+            {
+                Res2.Text = "Fehler";
+            }
+        }
+        private void OnDatePicker_DateChanged3(object sender, EventArgs e)
+        {
+            try
+            {
+                int days = 1;
+                for (int i = 0; To3.Value.Subtract(From3.Value.AddDays(i)).Days > 0; i++)
+                {
+                    if (From3.Value.AddDays(i).DayOfWeek == DayOfWeek.Sunday || From3.Value.AddDays(i).DayOfWeek == DayOfWeek.Saturday)
+                        continue;
+                    days++;
+                }
+                Res3.Text = days.ToString();
+
+                Invalidate();
+            }
+            catch
+            {
+                Res3.Text = "Fehler";
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -236,10 +705,11 @@ namespace FixUrlaub.Masks
             base.OnPaint(e);
 
 
-            int SizeRatio = (Height - 470) / 30;
+            int SizeRatio = (int)Math.Round((Height - 470) / 30.0f);
             Pen LinePen = new Pen(AppliedTheme.Secondary, 2 + (SizeRatio / 5));
 
 
+            #region Drawn in Labels
             e.Graphics.DrawString("fixemer", 
                 new Font(FrutigerBoldFam, 24 + SizeRatio), 
                 new SolidBrush(AppliedTheme.Secondary),
@@ -250,14 +720,29 @@ namespace FixUrlaub.Masks
                 new SolidBrush(AppliedTheme.Secondary),
                 30 + (Width / 1200 * 25),
                 55 + (Height / 1000 * 25) + SizeRatio);
+            e.Graphics.DrawString(vsf.cfg.CurrentLanguage.EmployeeField,
+                new Font(FrutigerFam, 7 + (int)Math.Round(SizeRatio * 0.7f)),
+                new SolidBrush(AppliedTheme.Secondary),
+                new RectangleF(60f + (6 * SizeRatio), 360f + (23 * SizeRatio), (250 + (25 * SizeRatio)) - (60 + (6 * SizeRatio)), 100f));
+            e.Graphics.DrawString(vsf.cfg.CurrentLanguage.SuperiorField,
+                new Font(FrutigerFam, 7 + (int)Math.Round(SizeRatio * 0.7f)),
+                new SolidBrush(AppliedTheme.Secondary),
+                new RectangleF(270 + (27 * SizeRatio), 360f + (23 * SizeRatio), (450 + (45 * SizeRatio)) - (270 + (27 * SizeRatio)), 100f));
+            e.Graphics.DrawString(vsf.cfg.CurrentLanguage.HRField,
+                new Font(FrutigerFam, 7 + (int)Math.Round(SizeRatio * 0.7f)),
+                new SolidBrush(AppliedTheme.Secondary),
+                new RectangleF(470 + (47 * SizeRatio), 360f + (23 * SizeRatio), Width - (470 + (47 * SizeRatio)), 100f));
+
+            // TODO: Paint in Name of person creating the Formular
+            #endregion
 
             #region Structural Lines
             Point[] LinePath = new Point[4]
             {
                 new Point(Width, DepLine.Location.Y + DepLine.Height + 10 - (SizeRatio / 5)),
                 new Point(20 + (2 * SizeRatio),DepLine.Location.Y + DepLine.Height + 10 - (SizeRatio / 5)),
-                new Point(20 + (2 * SizeRatio), 350 + (25 * SizeRatio)),
-                new Point(Width, 350 + (25 * SizeRatio))
+                new Point(20 + (2 * SizeRatio), 355 + (23 * SizeRatio)),
+                new Point(Width, 355 + (23 * SizeRatio))
             };
             byte[] LinePathTypes = new byte[4]
             {
@@ -266,7 +751,7 @@ namespace FixUrlaub.Masks
                 (byte)PathPointType.Line,
                 (byte)PathPointType.Line
             };
-            e.Graphics.DrawPath(LinePen, new System.Drawing.Drawing2D.GraphicsPath(LinePath, LinePathTypes));
+            e.Graphics.DrawPath(LinePen, new GraphicsPath(LinePath, LinePathTypes));
             e.Graphics.DrawLine(LinePen,
                 20 + (2 * SizeRatio),
                 200 + (13 * SizeRatio),
@@ -274,27 +759,65 @@ namespace FixUrlaub.Masks
                 200 + (13 * SizeRatio));
             e.Graphics.DrawLine(new Pen(AppliedTheme.Secondary, 6 + (SizeRatio / 2)),
                 new Point(600 + (60 * SizeRatio), DepLine.Location.Y + DepLine.Height + 10 - (SizeRatio / 5)),
-                new Point(600 + (60 * SizeRatio), 350 + (25 * SizeRatio)));
+                new Point(600 + (60 * SizeRatio), 355 + (23 * SizeRatio)));
+            e.Graphics.DrawLine(LinePen,
+                new Point(250 + (25 * SizeRatio), 355 + (23 * SizeRatio)),
+                new Point(250 + (25 * SizeRatio), 400 + (27 * SizeRatio)));
+            e.Graphics.DrawLine(LinePen,
+                new Point(450 + (45 * SizeRatio), 355 + (23 * SizeRatio)),
+                new Point(450 + (45 * SizeRatio), 400 + (27 * SizeRatio)));
             #endregion
 
             #region Text Lines
-            e.Graphics.DrawLine(LinePen, 
-                NameLine.Location.X + NameLine.Width,
-                NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5), 
-                Width,
-                NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5));
-            e.Graphics.DrawLine(LinePen,
-                BirthLine.Location.X + BirthLine.Width,
-                BirthLine.Location.Y + BirthLine.Height - 10 - (SizeRatio / 5),
-                Width,
-                BirthLine.Location.Y + BirthLine.Height - 10 - (SizeRatio / 5));
-            e.Graphics.DrawLine(LinePen,
-                DepLine.Location.X + DepLine.Width,
-                DepLine.Location.Y + DepLine.Height - 10 - (SizeRatio / 5),
-                Width,
-                DepLine.Location.Y + DepLine.Height - 10 - (SizeRatio / 5));
-
+            e.Graphics.DrawLine(pen: LinePen, 
+                x1: NameLine.Location.X + NameLine.Width,
+                y1: NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5), 
+                x2: Width + 100,
+                y2: NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5));
+            e.Graphics.DrawLine(pen: LinePen,
+                x1: BirthLine.Location.X + BirthLine.Width,
+                y1: BirthLine.Location.Y + BirthLine.Height - 10 - (SizeRatio / 5),
+                x2: Width,
+                y2: BirthLine.Location.Y + BirthLine.Height - 10 - (SizeRatio / 5));
+            e.Graphics.DrawLine(pen: LinePen,
+                x1: DepLine.Location.X + DepLine.Width,
+                y1: DepLine.Location.Y + DepLine.Height - 10 - (SizeRatio / 5),
+                x2: Width,
+                y2: DepLine.Location.Y + DepLine.Height - 10 - (SizeRatio / 5));
             #endregion
+
+            // Special Design around certain Controls
+            foreach (Control control in Controls)
+            {
+                if (control.Name.StartsWith("LeftVacField"))
+                {
+                    e.Graphics.DrawString("=",
+                        new Font(FrutigerFam, 12 + SizeRatio),
+                        new SolidBrush(AppliedTheme.Secondary),
+                        control.Location.X - 20 - (50 * (SizeRatio / 20)),
+                        control.Location.Y);
+                    e.Graphics.DrawLine(LinePen,
+                        control.Location.X,
+                        control.Location.Y + 1 + control.Height,
+                        control.Location.X + control.Width,
+                        control.Location.Y + 1 + control.Height);
+                    string d = int.TryParse(control.Text, out int res) ?
+                        res == 1 ?
+                            vsf.cfg.CurrentLanguage.Day : vsf.cfg.CurrentLanguage.Days :
+                        vsf.cfg.CurrentLanguage.Days;
+                    e.Graphics.DrawString(d,
+                        new Font(FrutigerFam, 12 + (int)Math.Round(SizeRatio * 0.8f)),
+                        new SolidBrush(AppliedTheme.Secondary),
+                        control.Location.X + control.Width,
+                        control.Location.Y);
+                }
+                if(control.Name == "ReasonField")
+                    e.Graphics.DrawLine(LinePen,
+                        control.Location.X,
+                        control.Location.Y + 1 + control.Height,
+                        control.Location.X + control.Width,
+                        control.Location.Y + 1 + control.Height);
+            }
         }
         protected override void OnSizeChanged(EventArgs e)
         {
@@ -304,7 +827,7 @@ namespace FixUrlaub.Masks
             xHeight = Height;
             WidthRatio = Width / ((float)xWidth);
             xWidth = Width;
-            int SizeRatio = (Height - 470) / 30;
+            int SizeRatio = (int)Math.Round((Height - 470) / 30.0f);
 
             string[] ScaleBlacklist =
             {
