@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,7 +35,10 @@ namespace FixUrlaub.Util
             SuperiorField,
             HRField,
             Submit,
-            Close;
+            Close,
+            Settings,
+            Calendar,
+            Approve;
 
         /// <summary>
         /// Object that reads out a language-file and houses all the text that needs to be translated
@@ -71,6 +74,9 @@ namespace FixUrlaub.Util
             HRField =           translations[i++];
             Submit =            translations[i++];
             Close =             translations[i++];
+            Settings =          translations[i++];
+            Calendar =          translations[i++];
+            Approve =           translations[i++];
         }
 
         public override string ToString()
