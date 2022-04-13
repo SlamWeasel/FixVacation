@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -34,12 +34,20 @@ namespace FixUrlaub.Util
         /// Evokes the look of a physical piece of paper with a Pen written on it
         /// </summary>
         public static readonly ColorTheme Default = new ColorTheme(DefaultBackground, DefaultForeground, DefaultHighlight);
+        /// <summary>
+        /// Dark preset ColorTheme with gray background and light gray lines
+        /// </summary>
+        public static readonly ColorTheme Dark = new ColorTheme(Color.FromArgb(40, 40, 40), Color.FromArgb(200, 200, 200), Color.FromArgb(200, 100, 200));
+        /// <summary>
+        /// White preset ColorTheme, similar to writing on a white piece of paper
+        /// </summary>
+        public static readonly ColorTheme White = new ColorTheme(Color.White, Color.Black, Color.Blue);
 
 
         /// <summary>
         /// Represents the ColoTheme the Forms will follow.<para/>Initialized without any Colors, it will Default to <see cref="Color.Wheat"/> for Primary and Secondary
         /// </summary>
-        public ColorTheme() : this(Color.Wheat, Color.Wheat) {}
+        public ColorTheme() : this(Color.Yellow, Color.Red) {}
         /// <summary>
         /// Represents the ColorTheme the Forms will follow
         /// </summary>
