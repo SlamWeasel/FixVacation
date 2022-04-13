@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
@@ -15,7 +15,13 @@ namespace FixUrlaub.Util
                         FullName,
                         ID,
                         Department;
-        public ADUser Leader;
+
+        private ADUser _leader;
+        public ADUser Leader
+        {
+            set { _leader = value; }
+            get => _leader == null ? new ADUser() : _leader;
+        }
         public bool IsLeader = false;
         public DateTime Birthday;
         public VacationInfo VI;
@@ -44,31 +50,31 @@ namespace FixUrlaub.Util
         [HandleProcessCorruptedStateExceptions]
         private void PullUserData(UserPrincipal u)
         {
-            this.FullName = u.DisplayName;
-            this.ID = u.EmployeeId;
+            FullName = u.DisplayName;
+            ID = u.EmployeeId;
             if (u.GetUnderlyingObjectType() == typeof(DirectoryEntry))
             {
                 using (DirectoryEntry entry = (DirectoryEntry)u.GetUnderlyingObject())
                 {
                     if (entry.Properties["department"] != null)
-                        this.Department = entry.Properties["department"].Value.ToString();
+                        Department = entry.Properties["department"].Value.ToString();
 
                     //Creates a new Instance of ADUser by using the "manager" Property to search for it in the AD.
                     //If there is no Manager put in, CFixemer is automatically put as Manager 
                     if (entry.Properties["manager"].Value != null)
-                        this.Leader = new ADUser(
+                        Leader = new ADUser(
                             UserPrincipal.FindByIdentity(new PrincipalContext(ContextType.Domain),
                             IdentityType.DistinguishedName,
                             entry.Properties["manager"].Value.ToString()));
                     else if (u.Surname == "Fixemer")
-                        this.Leader = null;
+                        Leader = null;
                     else
-                        this.Leader = new ADUser();
+                        Leader = new ADUser();
 
                     if (entry.Properties["manager"] != null)
                         foreach (string v in entry.Properties["memberOf"])
                             if (new PropertyValue(v).CN == "Team_Manager")
-                                this.IsLeader = true;
+                                IsLeader = true;
                 }
 
                 // TODO: Pull Data from SQL-Database
