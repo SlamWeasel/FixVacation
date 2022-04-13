@@ -19,6 +19,8 @@ namespace FixUrlaub.Masks
         public VacADLogin vadl;
         public VacSettingsForm vsf;
 
+        public ADUser User;
+
         private int xHeight;
         private float HeightRatio = 0.462963f;
         private int xWidth;
@@ -57,18 +59,19 @@ namespace FixUrlaub.Masks
         public Button Submit, Calendar, Approve;
         #endregion
 
-        public VacMainForm() : base("VacMainForm")
+        public VacMainForm(ADUser u) : base("VacMainForm")
         {
             #region Child-Forms
-            vlf = new VacLeaderForm();
-            vcf = new VacCalendarForm();
-            vadl = new VacADLogin();
-            vsf = new VacSettingsForm();
+            vlf = new VacLeaderForm(this);
+            vcf = new VacCalendarForm(this);
+            vadl = new VacADLogin(this);
+            vsf = new VacSettingsForm(this, new Settings() { CurrentLanguage = Language.German, Theme = AppliedTheme});
             #endregion
 
             Bounds = new Rectangle(200, 200, (int)Math.Round(500 * FixMath.VacationFormularAspect, 0), 500);
             xHeight = Height;
             xWidth = Width;
+            User = u;
 
             LoadControls();
         }
@@ -111,6 +114,8 @@ namespace FixUrlaub.Masks
                 {
                     vsf.ShowDialog();
                     vsf.BringToFront();
+
+                    Console.WriteLine(vsf.Parent.Name);
                 };
             SettingsTip.SetToolTip(SettingsIcon, lang.SettingsDesc);
             ToolTip ExitTip = new ToolTip()
@@ -126,7 +131,7 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(Width - 31, 1, 30, 30),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font(FrutigerBoldFam, 20f),
-                ForeColor = vcf.AppliedTheme.Secondary
+                ForeColor = AppliedTheme.Secondary
             };
             ExitIcon.Click += (object sender, EventArgs e) => this.Close();
             ExitTip.SetToolTip(ExitIcon, lang.Close);
@@ -145,7 +150,7 @@ namespace FixUrlaub.Masks
                 Location = new Point(Width / 2 - 50, 30),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true,
-                ForeColor = vsf.AppliedTheme.Secondary
+                ForeColor = AppliedTheme.Secondary
             };
             BirthLine = new Label()
             {
@@ -197,8 +202,9 @@ namespace FixUrlaub.Masks
             #region Textfields
             NameLineField = new SeeThroughTextBox(this)
             {
+                Text = User.FullName,
                 Name = "NameLineField",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(NameLine.Location.X + NameLine.Width, 23, Width - (NameLine.Location.X + NameLine.Width) - 30, 20)
             };
             BirthLineField = new DateTimePicker()
@@ -207,39 +213,40 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle((Width / 2 - 50) + BirthLine.Width, 60, IDLine.Location.X - ((Width / 2 - 50) + BirthLine.Width), 20),
                 CalendarFont = new Font(FrutigerFam, 12),
                 Font = new Font(FrutigerFam, 12),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Today.AddDays(30),                         // TODO: Put in Birthday Date Automatically
                 Format = DateTimePickerFormat.Short
             };
             IDLineField = new SeeThroughTextBox(this)
             {
+                Text = User.ID,
                 Name = "IDLineField",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(IDLine.Location.X + IDLine.Width, 63, Width - (IDLine.Location.X + IDLine.Width) - 30, 20)
             };
             DepLineField = new SeeThroughTextBox(this)
             {
-                Text = "",                                                  // TODO: Put Department in here
+                Text = User.Department,
                 Name = "DepLineField",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(DepLine.Location.X + DepLine.Width, 103, Width - (DepLine.Location.X + DepLine.Width) - 30, 20)
             };
             CurrentYearField = new SeeThroughTextBox(this)
             {
                 Text = DateTime.Today.Year.ToString(),
                 Name = "CurrentYearField",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(YearAnnouncement.Location.X + YearAnnouncement.Width, 145, 50, 20)
             };
             TakenVacField = new SeeThroughTextBox(this)
             {
                 Text = "",                                                  // TODO: Put Vacation Data in here
                 Name = "TakenVacField",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(35, 190, 40, 20)
             };
             Controls.Add(TakenVacField);
@@ -247,7 +254,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.RemainingVac,
                 Name = "TakenVacLabel",
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(TakenVacField.Location.X + TakenVacField.Width, TakenVacField.Location.Y - 4),
                 Font = new Font(FrutigerBoldFam, 12),
                 AutoSize = true,
@@ -258,7 +265,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.Announcement,
                 Name = "AnnounceLabel",
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(35, TakenVacLabel.Location.Y + 30),
                 Font = new Font(FrutigerBoldFam, 12),
                 AutoSize = true
@@ -268,7 +275,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.YearVac,
                 Name = "YearVaclabel",
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(35, AnnounceLabel.Location.Y + 30),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true
@@ -279,8 +286,8 @@ namespace FixUrlaub.Masks
                 Name = "YearCheck",
                 Checked = true,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = vcf.AppliedTheme.Primary,
-                ForeColor = vcf.AppliedTheme.Secondary,
+                BackColor = AppliedTheme.Primary,
+                ForeColor = AppliedTheme.Secondary,
                 Bounds = new Rectangle(24, YearVacLabel.Location.Y + 3, 12, 12)
             };
             YearCheck.CheckedChanged += OnYearCheckChanged;
@@ -289,7 +296,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.SpecVac,
                 Name = "SpecVacLabel",
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(35, YearVacLabel.Location.Y + 25),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true
@@ -300,8 +307,8 @@ namespace FixUrlaub.Masks
                 Name = "SpecCheck",
                 Checked = false,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = vcf.AppliedTheme.Primary,
-                ForeColor = vcf.AppliedTheme.Secondary,
+                BackColor = AppliedTheme.Primary,
+                ForeColor = AppliedTheme.Secondary,
                 Bounds = new Rectangle(24, SpecVacLabel.Location.Y + 3, 12, 12)
             };
             SpecCheck.CheckedChanged += OnSpecCheckChanged;
@@ -310,7 +317,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.UnpaidVac,
                 Name = "UnpaidVacLabel",
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(35, SpecVacLabel.Location.Y + 25),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true
@@ -321,8 +328,8 @@ namespace FixUrlaub.Masks
                 Name = "UnpaidCheck",
                 Checked = false,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = vcf.AppliedTheme.Primary,
-                ForeColor = vcf.AppliedTheme.Secondary,
+                BackColor = AppliedTheme.Primary,
+                ForeColor = AppliedTheme.Secondary,
                 Bounds = new Rectangle(24, UnpaidVacLabel.Location.Y + 3, 12, 12)
             };
             UnpaidCheck.CheckedChanged += OnUnpaidCheckChanged;
@@ -331,7 +338,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.Reason,
                 Name = "ReasonLabel",
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(35, UnpaidVacLabel.Location.Y + 55),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true
@@ -342,7 +349,7 @@ namespace FixUrlaub.Masks
             {
                 Text = "",                                                  // TODO: Put Vacation Data in here
                 Name = "LeftVacField-Left",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(500, 190, 100, 20),
                 TextAlign = HorizontalAlignment.Center
             };
@@ -367,7 +374,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.From,
                 Name = lang.From,
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(225, YearVacLabel.Location.Y),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true
@@ -401,11 +408,11 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(FromLabel.Location.X + FromLabel.Width, FromLabel.Location.Y, 80, 15),
                 CalendarFont = new Font(FrutigerFam, 8),
                 Font = new Font(FrutigerFam, 8),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Now,
                 Format = DateTimePickerFormat.Short
             };
@@ -417,17 +424,16 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(FromLabel_.Location.X + FromLabel_.Width, FromLabel_.Location.Y, 80, 15),
                 CalendarFont = new Font(FrutigerFam, 8),
                 Font = new Font(FrutigerFam, 8),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Now,
                 Format = DateTimePickerFormat.Short,
                 Enabled = false
             };
             From2.ValueChanged += OnDatePicker_DateChanged2;
-            From2.MouseUp += OnDisabledDatePickerMouseUp;
             Controls.Add(From2);
             From3 = new DateTimePicker()
             {
@@ -435,11 +441,11 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(FromLabel__.Location.X + FromLabel__.Width, FromLabel__.Location.Y, 80, 15),
                 CalendarFont = new Font(FrutigerFam, 8),
                 Font = new Font(FrutigerFam, 8),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Now,
                 Format = DateTimePickerFormat.Short,
                 Enabled = false
@@ -450,7 +456,7 @@ namespace FixUrlaub.Masks
             {
                 Text = lang.To,
                 Name = lang.To,
-                ForeColor = vcf.AppliedTheme.Secondary,
+                ForeColor = AppliedTheme.Secondary,
                 Location = new Point(From1.Location.X + From1.Width, YearVacLabel.Location.Y),
                 Font = new Font(FrutigerFam, 12),
                 AutoSize = true
@@ -482,11 +488,11 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(ToLabel.Location.X + ToLabel.Width, ToLabel.Location.Y, 80, 15),
                 CalendarFont = new Font(FrutigerFam, 8),
                 Font = new Font(FrutigerFam, 8),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Now,
                 Format = DateTimePickerFormat.Short
             };
@@ -498,11 +504,11 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(ToLabel_.Location.X + ToLabel_.Width, ToLabel_.Location.Y, 80, 15),
                 CalendarFont = new Font(FrutigerFam, 8),
                 Font = new Font(FrutigerFam, 8),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Now,
                 Format = DateTimePickerFormat.Short,
                 Enabled = false
@@ -515,11 +521,11 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(ToLabel__.Location.X + ToLabel__.Width, ToLabel__.Location.Y, 80, 15),
                 CalendarFont = new Font(FrutigerFam, 8),
                 Font = new Font(FrutigerFam, 8),
-                CalendarForeColor = vcf.AppliedTheme.Secondary,
-                CalendarTrailingForeColor = vcf.AppliedTheme.Secondary,
-                CalendarMonthBackground = vcf.AppliedTheme.Primary,
-                CalendarTitleBackColor = ColorTheme.InvertColor(vcf.AppliedTheme.Secondary),
-                CalendarTitleForeColor = vcf.AppliedTheme.Secondary,
+                CalendarForeColor = AppliedTheme.Secondary,
+                CalendarTrailingForeColor = AppliedTheme.Secondary,
+                CalendarMonthBackground = AppliedTheme.Primary,
+                CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
+                CalendarTitleForeColor = AppliedTheme.Secondary,
                 Value = DateTime.Now,
                 Format = DateTimePickerFormat.Short,
                 Enabled = false
@@ -530,7 +536,7 @@ namespace FixUrlaub.Masks
             {
                 Text = "",
                 Name = "ReasonField",
-                ForeColor = vcf.AppliedTheme.Tertiary,
+                ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(ReasonLabel.Location.X + ReasonLabel.Width, ReasonLabel.Location.Y, Width - (ReasonLabel.Location.X + ReasonLabel.Width) - 50, 20),
                 TextAlign = HorizontalAlignment.Left
             };
@@ -577,7 +583,6 @@ namespace FixUrlaub.Masks
             Calendar.MouseEnter += OnColorInvert;
             Calendar.MouseLeave += OnColorInvert;
 
-            // TODO: Disable Button if user is not TeamLeader
             Approve = new Button()
             {
                 Text = lang.Approve,
@@ -587,7 +592,9 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerBoldFam, 12),
                 FlatStyle = FlatStyle.Popup,
                 Bounds = new Rectangle(500, 450, 150, 40),
-                TextAlign = ContentAlignment.MiddleCenter
+                TextAlign = ContentAlignment.MiddleCenter,
+
+                Enabled = User.IsLeader ? true : false
             };
             Approve.Click += OnApproveClick;
             Approve.MouseEnter += OnColorInvert;
@@ -605,7 +612,8 @@ namespace FixUrlaub.Masks
         }
         private void OnApproveClick(object sender, EventArgs e)
         {
-            
+            vlf.ShowDialog(this);
+            vlf.BringToFront();
         }
         private void OnCalendarClick(object sender, EventArgs e)
         {
@@ -634,10 +642,6 @@ namespace FixUrlaub.Masks
         {
             From3.Enabled = ((CheckBox)sender).Checked;
             To3.Enabled = ((CheckBox)sender).Checked;
-        }
-        private void OnDisabledDatePickerMouseUp(object sender, MouseEventArgs e)
-        {
-            ((Control)sender).Enabled = true;
         }
         private void OnDatePicker_DateChanged1(object sender, EventArgs e)
         {
@@ -732,8 +736,10 @@ namespace FixUrlaub.Masks
                 new Font(FrutigerFam, 7 + (int)Math.Round(SizeRatio * 0.7f)),
                 new SolidBrush(AppliedTheme.Secondary),
                 new RectangleF(470 + (47 * SizeRatio), 360f + (23 * SizeRatio), Width - (470 + (47 * SizeRatio)), 100f));
-
-            // TODO: Paint in Name of person creating the Formular
+            e.Graphics.DrawString(DateTime.Now.Date.ToShortDateString() + " " + User.FullName,
+                new Font(FrutigerFam, 9 + (int)Math.Round(SizeRatio * 0.85f)),
+                new SolidBrush(AppliedTheme.Tertiary),
+                new RectangleF(40f + (4 * SizeRatio), 375f + (25 * SizeRatio), (250 + (25 * SizeRatio)) - (40 + (4 * SizeRatio)), 100f));
             #endregion
 
             #region Structural Lines
@@ -847,6 +853,8 @@ namespace FixUrlaub.Masks
                     (int)Math.Round(c.Width * WidthRatio), 
                     (int)Math.Round(c.Height * HeightRatio));
             }
+
+
             try
             {
                 if(YearAnnouncement != null)
@@ -857,6 +865,14 @@ namespace FixUrlaub.Masks
                                                 (int)Math.Round(SettingsIcon.Height * HeightRatio));
             }
             catch { }
+        }
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            int screenOffset = Screen.FromPoint(Cursor.Position).Bounds.Y;
+            if (Cursor.Position.Y - screenOffset == 0)                  // Maximizes the Window, if it hits the upper Screenborder
+                this.WindowState = FormWindowState.Maximized;
         }
     }
 }
