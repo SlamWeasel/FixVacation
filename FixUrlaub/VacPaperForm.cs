@@ -1,4 +1,4 @@
-﻿
+
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
@@ -83,10 +83,6 @@ namespace FixUrlaub
 
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);       // Sends the order to the operating system, to grab the Window
-
-                int screenOffset = Screen.FromPoint(Cursor.Position).Bounds.Y;
-                if (Cursor.Position.Y - screenOffset == 0)                  // Maximizes the Window, if it hits the upper Screenborder
-                    this.WindowState = FormWindowState.Maximized;
             }
         }
         #endregion
