@@ -12,7 +12,8 @@ namespace FixUrlaub.Util
         public static readonly Language English = new Language(Environment.CurrentDirectory + "\\lang-EN.txt"),
                                         German = new Language(Environment.CurrentDirectory + "\\lang-DE.txt");
 
-        public readonly string LangName,
+        public readonly string 
+            LangName,
             LogoTopLeft, 
             Day, 
             Days, 
@@ -37,8 +38,10 @@ namespace FixUrlaub.Util
             Submit,
             Close,
             Settings,
+            SettingsDesc,
             Calendar,
-            Approve;
+            Approve,
+            Lang;
 
         /// <summary>
         /// Object that reads out a language-file and houses all the text that needs to be translated
@@ -75,8 +78,10 @@ namespace FixUrlaub.Util
             Submit =            translations[i++];
             Close =             translations[i++];
             Settings =          translations[i++];
+            SettingsDesc =      translations[i++];
             Calendar =          translations[i++];
             Approve =           translations[i++];
+            Lang =              translations[i++];
         }
 
         public override string ToString()
