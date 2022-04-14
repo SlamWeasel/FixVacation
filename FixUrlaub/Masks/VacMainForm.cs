@@ -66,6 +66,12 @@ namespace FixUrlaub.Masks
             vcf = new VacCalendarForm(this);
             vadl = new VacADLogin(this);
             vsf = new VacSettingsForm(this, new Settings() { CurrentLanguage = Language.German, Theme = AppliedTheme});
+            vsf.FormClosed += (sender, e) =>
+                {
+                    Controls.Clear();
+                    LoadControls();
+                    Invalidate();
+                };
             #endregion
 
             Bounds = new Rectangle(200, 200, (int)Math.Round(500 * FixMath.VacationFormularAspect, 0), 500);
@@ -76,9 +82,12 @@ namespace FixUrlaub.Masks
             LoadControls();
         }
 
-        private void LoadControls()
+        public void LoadControls()
         {
             Language lang = vsf.cfg.CurrentLanguage;
+
+            BackColor = AppliedTheme.Primary;
+            ForeColor = AppliedTheme.Secondary;
 
             #region Icons
             ToolTip SettingsTip = new ToolTip()
@@ -112,10 +121,14 @@ namespace FixUrlaub.Masks
                 };
             SettingsIcon.Click += (object sender, EventArgs e) =>
                 {
-                    vsf.ShowDialog();
-                    vsf.BringToFront();
+                    SettingsIcon.BeginInvoke(new Action(() =>
+                    {
+                        vsf.ShowDialog();
+                        vsf.BringToFront();
 
-                    Console.WriteLine(vsf.Parent.Name);
+                        Console.WriteLine(vsf.Parent.Name);
+                    }
+                    ));
                 };
             SettingsTip.SetToolTip(SettingsIcon, lang.SettingsDesc);
             ToolTip ExitTip = new ToolTip()
