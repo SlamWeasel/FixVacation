@@ -41,7 +41,10 @@ namespace FixUrlaub.Util
             SettingsDesc,
             Calendar,
             Approve,
-            Lang;
+            Lang,
+            Custom,
+            Color,
+            Pri, Sec, Tri;
 
         /// <summary>
         /// Object that reads out a language-file and houses all the text that needs to be translated
@@ -82,6 +85,11 @@ namespace FixUrlaub.Util
             Calendar =          translations[i++];
             Approve =           translations[i++];
             Lang =              translations[i++];
+            Custom =            translations[i++];
+            Color =             translations[i++];
+            Pri =               translations[i++];
+            Sec =               translations[i++];
+            Tri =               translations[i++];
         }
 
         public override string ToString()
