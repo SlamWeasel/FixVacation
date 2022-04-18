@@ -1,4 +1,5 @@
 using FixUrlaub.Util;
+using FixUrlaub.Controls;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace FixUrlaub.Masks
 {
-    internal class VacSettingsForm : VacPaperForm 
+    internal class VacSettingsForm : VacPaperForm
     {
         new public VacMainForm Parent;
         public Settings cfg;
@@ -23,7 +25,10 @@ namespace FixUrlaub.Masks
             ColorLabel,
             PriColLabel,
             SecColLabel,
-            TriColLabel;
+            TriColLabel,
+            TechLabel,
+            SQLLabel,
+            DirLabel;
         public Button
             LangEnButton,
             LangDeButton,
@@ -31,6 +36,9 @@ namespace FixUrlaub.Masks
             DefColButton,
             WhiColButton,
             BlaColButton;
+        public SeeThroughTextBox
+            SQL,
+            Directory;
         #endregion
 
 
@@ -99,52 +107,52 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary
             };
             LangEnButton.Paint += (sender, e) =>
-                {
-                    base.OnPaint(e);
+            {
+                base.OnPaint(e);
 
-                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.White), 5),
-                        -3, -2,
-                        42, 30);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.White), 5),
-                        42, -2,
-                        -3, 31);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.Red), 1),
-                        0, 1,
-                        20, 16);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.Red), 1),
-                        40, 28,
-                        20, 13);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.Red), 1),
-                        0, 30,
-                        20, 15);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.Red), 1),
-                        38, 0,
-                        20, 13);
-                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.White), 8),
-                        20, 0,
-                        20, 30);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.White), 8),
-                        0, 15,
-                        40, 15);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.Red), 4),
-                        20, 0,
-                        20, 30);
-                    e.Graphics.DrawLine(
-                        new Pen(new SolidBrush(Color.Red), 4),
-                        0, 15,
-                        40, 15);
-                };
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.White), 5),
+                    -3, -2,
+                    42, 30);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.White), 5),
+                    42, -2,
+                    -3, 31);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.Red), 1),
+                    0, 1,
+                    20, 16);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.Red), 1),
+                    40, 28,
+                    20, 13);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.Red), 1),
+                    0, 30,
+                    20, 15);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.Red), 1),
+                    38, 0,
+                    20, 13);
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.White), 8),
+                    20, 0,
+                    20, 30);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.White), 8),
+                    0, 15,
+                    40, 15);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.Red), 4),
+                    20, 0,
+                    20, 30);
+                e.Graphics.DrawLine(
+                    new Pen(new SolidBrush(Color.Red), 4),
+                    0, 15,
+                    40, 15);
+            };
             LangEnButton.MouseEnter += OnColorInvert;
             LangEnButton.MouseLeave += OnColorInvert;
             EnTip.SetToolTip(LangEnButton, Language.English.LangName);
@@ -164,19 +172,19 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary
             };
             LangDeButton.Paint += (sender, e) =>
-                {
-                    base.OnPaint(e);
+            {
+                base.OnPaint(e);
 
-                    e.Graphics.FillRectangle(
-                        brush: new SolidBrush(Color.Black),
-                        rect: new Rectangle(2, 2, Width - 4, ((Control)sender).Height / 3 + 3));
-                    e.Graphics.FillRectangle(
-                        brush: new SolidBrush(Color.Red),
-                        rect: new Rectangle(2, ((Control)sender).Height / 3 + 2, Width - 4, (int)Math.Round(((Control)sender).Height / 1.5f) + 3));
-                    e.Graphics.FillRectangle(
-                        brush: new SolidBrush(Color.Gold),
-                        rect: new Rectangle(2, (int)Math.Round(((Control)sender).Height / 1.5f) + 2, Width - 4, Height - 4));
-                };
+                e.Graphics.FillRectangle(
+                    brush: new SolidBrush(Color.Black),
+                    rect: new Rectangle(2, 2, Width - 4, ((Control)sender).Height / 3 + 3));
+                e.Graphics.FillRectangle(
+                    brush: new SolidBrush(Color.Red),
+                    rect: new Rectangle(2, ((Control)sender).Height / 3 + 2, Width - 4, (int)Math.Round(((Control)sender).Height / 1.5f) + 3));
+                e.Graphics.FillRectangle(
+                    brush: new SolidBrush(Color.Gold),
+                    rect: new Rectangle(2, (int)Math.Round(((Control)sender).Height / 1.5f) + 2, Width - 4, Height - 4));
+            };
             LangDeButton.MouseEnter += OnColorInvert;
             LangDeButton.MouseLeave += OnColorInvert;
             DeTip.SetToolTip(LangDeButton, Language.German.LangName);
@@ -220,18 +228,19 @@ namespace FixUrlaub.Masks
                 BackColor = AppliedTheme.Primary
             };
             PriColLabel.Click += (sender, e) =>
+            {
+                ColorDialog colorDialog = new ColorDialog();
+                colorDialog.AllowFullOpen = true;
+                if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
-                    ColorDialog colorDialog = new ColorDialog();
-                    colorDialog.AllowFullOpen = true;
-                    if(colorDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        cfg.Theme.Primary = colorDialog.Color;
+                    cfg.Theme.Primary = colorDialog.Color;
+                    AppliedTheme = cfg.Theme;
 
-                        Controls.Clear();
-                        LoadControls();
-                        Invalidate();
-                    }
-                };
+                    Controls.Clear();
+                    LoadControls();
+                    Invalidate();
+                }
+            };
             PriTip.SetToolTip(PriColLabel, lang.Pri);
             ToolTip SecTip = new ToolTip()
             {
@@ -248,18 +257,19 @@ namespace FixUrlaub.Masks
                 BackColor = AppliedTheme.Secondary
             };
             SecColLabel.Click += (sender, e) =>
+            {
+                ColorDialog colorDialog = new ColorDialog();
+                colorDialog.AllowFullOpen = true;
+                if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
-                    ColorDialog colorDialog = new ColorDialog();
-                    colorDialog.AllowFullOpen = true;
-                    if(colorDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        cfg.Theme.Secondary = colorDialog.Color;
+                    cfg.Theme.Secondary = colorDialog.Color;
+                    AppliedTheme = cfg.Theme;
 
-                        Controls.Clear();
-                        LoadControls();
-                        Invalidate();
-                    }
-                };
+                    Controls.Clear();
+                    LoadControls();
+                    Invalidate();
+                }
+            };
             SecTip.SetToolTip(SecColLabel, lang.Sec);
             ToolTip TriTip = new ToolTip()
             {
@@ -276,18 +286,19 @@ namespace FixUrlaub.Masks
                 BackColor = AppliedTheme.Tertiary
             };
             TriColLabel.Click += (sender, e) =>
+            {
+                ColorDialog colorDialog = new ColorDialog();
+                colorDialog.AllowFullOpen = true;
+                if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
-                    ColorDialog colorDialog = new ColorDialog();
-                    colorDialog.AllowFullOpen = true;
-                    if(colorDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        cfg.Theme.Tertiary = colorDialog.Color;
+                    cfg.Theme.Tertiary = colorDialog.Color;
+                    AppliedTheme = cfg.Theme;
 
-                        Controls.Clear();
-                        LoadControls();
-                        Invalidate();
-                    }
-                };
+                    Controls.Clear();
+                    LoadControls();
+                    Invalidate();
+                }
+            };
             TriTip.SetToolTip(TriColLabel, lang.Tri);
 
             DefColButton = new Button()
@@ -301,13 +312,14 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerFam, 12)
             };
             DefColButton.Click += (sender, e) =>
-                {
-                    cfg.Theme = ColorTheme.Default;
+            {
+                cfg.Theme = ColorTheme.Default;
+                AppliedTheme = cfg.Theme;
 
-                    Controls.Clear();
-                    LoadControls();
-                    Invalidate();
-                };
+                Controls.Clear();
+                LoadControls();
+                Invalidate();
+            };
             WhiColButton = new Button()
             {
                 Text = "\"Paper\"",
@@ -319,13 +331,14 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerFam, 12)
             };
             WhiColButton.Click += (sender, e) =>
-                {
-                    cfg.Theme = ColorTheme.White;
+            {
+                cfg.Theme = ColorTheme.White;
+                AppliedTheme = cfg.Theme;
 
-                    Controls.Clear();
-                    LoadControls();
-                    Invalidate();
-                };
+                Controls.Clear();
+                LoadControls();
+                Invalidate();
+            };
             BlaColButton = new Button()
             {
                 Text = "\"Charcoal\"",
@@ -337,14 +350,61 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerFam, 12)
             };
             BlaColButton.Click += (sender, e) =>
-                {
-                    cfg.Theme = ColorTheme.Dark;
-                    cfg.Theme.Primary = ColorTheme.Dark.Primary;
+            {
+                cfg.Theme = ColorTheme.Dark;
+                AppliedTheme = cfg.Theme;
 
-                    Controls.Clear();
-                    LoadControls();
-                    Invalidate();
-                };
+                Controls.Clear();
+                LoadControls();
+                Invalidate();
+            };
+            #endregion
+
+            #region Functionality
+            TechLabel = new Label()
+            {
+                Text = "Functionality",                             // TODO: Replace with Language Property
+                Name = "TechLabel",
+                Location = new Point(20, 240),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font(FrutigerBoldFam, 20f),
+                ForeColor = AppliedTheme.Secondary,
+                AutoSize = true
+            };
+            SQLLabel = new Label()
+            {
+                Text = "Database-Connection-String-Override",       // TODO: Replace with Language Property
+                Name = "SQLLabel",
+                Location = new Point(30, 275),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font(FrutigerFam, 12f),
+                ForeColor = AppliedTheme.Secondary,
+                AutoSize = true
+            };
+            SQL = new SeeThroughTextBox(this.Parent)
+            {
+                Name = "SQL",
+                Bounds = new Rectangle(30, 300, 280, 20),
+                Font = new Font(FrutigerFam, 10f),
+                ForeColor = AppliedTheme.Tertiary
+            };
+            DirLabel = new Label()
+            {
+                Text = "Directory-Override",                        // TODO: Replace with Language Property
+                Name = "DirLabel",
+                Location = new Point(30, 320),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font(FrutigerFam, 12f),
+                ForeColor = AppliedTheme.Secondary,
+                AutoSize = true
+            };
+            Directory = new SeeThroughTextBox(this.Parent)
+            {
+                Name = "Directory",
+                Bounds = new Rectangle(30, 345, 280, 20),
+                Font = new Font(FrutigerFam, 10f),
+                ForeColor = AppliedTheme.Tertiary
+            };
             #endregion
 
 
@@ -361,6 +421,11 @@ namespace FixUrlaub.Masks
             Controls.Add(DefColButton);
             Controls.Add(WhiColButton);
             Controls.Add(BlaColButton);
+            Controls.Add(TechLabel);
+            Controls.Add(SQLLabel);
+            Controls.Add(SQL);
+            Controls.Add(DirLabel);
+            Controls.Add(Directory);
         }
 
         private void OnColorInvert(object sender, EventArgs e)
@@ -379,7 +444,7 @@ namespace FixUrlaub.Masks
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    cfg.LanguageaugeOverride = dlg.FileName;
+                    cfg.LanguageOverride = dlg.FileName;
                     cfg.CurrentLanguage = new Language(dlg.FileName);
 
                     Controls.Clear();
@@ -388,6 +453,17 @@ namespace FixUrlaub.Masks
                 }
             }
             ));
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            if(SQL.Text != "")
+                cfg.SqlConnectionString = SQL.Text;
+            if(Directory.Text != "")
+                cfg.DirectoryOverride = DirLabel.Text;
+
         }
     }
 }
