@@ -26,34 +26,43 @@ namespace FixUrlaub.Util
         /// </summary>
         public Dictionary<string, Color> Additionals;
 
-        public static readonly Color DefaultBackground = Color.FromArgb(243, 255, 79), 
+        public static readonly Color DefaultBackground = Color.FromArgb(243, 255, 79),
                                         DefaultForeground = Color.FromArgb(89, 51, 40),
                                         DefaultHighlight = Color.FromArgb(8, 2, 74);
         /// <summary>
         /// Yellow Background with dark-brown-red Foreground Elemtns and dark blue Hihglights.<br/>
         /// Evokes the look of a physical piece of paper with a Pen written on it
         /// </summary>
-        public static readonly ColorTheme Default = new ColorTheme(DefaultBackground, DefaultForeground, DefaultHighlight);
+        public static ColorTheme Default
+        {
+            get => new ColorTheme(DefaultBackground, DefaultForeground, DefaultHighlight);
+        }
         /// <summary>
         /// Dark preset ColorTheme with gray background and light gray lines
         /// </summary>
-        public static readonly ColorTheme Dark = new ColorTheme(Color.FromArgb(40, 40, 40), Color.FromArgb(200, 200, 200), Color.FromArgb(200, 100, 200));
+        public static ColorTheme Dark
+        {
+            get => new ColorTheme(Color.FromArgb(40, 40, 40), Color.FromArgb(200, 200, 200), Color.FromArgb(200, 100, 200));
+        }
         /// <summary>
         /// White preset ColorTheme, similar to writing on a white piece of paper
         /// </summary>
-        public static readonly ColorTheme White = new ColorTheme(Color.White, Color.Black, Color.Blue);
+        public static ColorTheme White
+        {
+            get => new ColorTheme(Color.White, Color.Black, Color.Blue);
+        }
 
 
         /// <summary>
         /// Represents the ColoTheme the Forms will follow.<para/>Initialized without any Colors, it will Default to <see cref="Color.Wheat"/> for Primary and Secondary
         /// </summary>
-        public ColorTheme() : this(Color.Yellow, Color.Red) {}
+        public ColorTheme() : this(Color.Yellow, Color.Red) { }
         /// <summary>
         /// Represents the ColorTheme the Forms will follow
         /// </summary>
         /// <param name="P">Primary <see cref="Color"/>, usually used for the background</param>
         /// <param name="S">Secondary <see cref="Color"/>, usually used for foreground elements or Controls</param>
-        public ColorTheme(Color P, Color S) : this(P, S, DefaultHighlight){}
+        public ColorTheme(Color P, Color S) : this(P, S, DefaultHighlight) { }
         /// <summary>
         /// Represents the ColorTheme the Forms will follow
         /// </summary>
@@ -73,13 +82,13 @@ namespace FixUrlaub.Util
         /// <param name="S">Secondary <see cref="Color"/>, usually used for foreground elements or Controls</param>
         /// <param name="T">Tertiary <see cref="Color"/>, usually used for little highlighted Elements, when given</param>
         /// <param name="addits">Any amount of additional Colors can be safed here. There are certain Keywords that can be used to do special designs</param>
-        public ColorTheme(Color P, Color S, Color T, params KeyValuePair<string,Color>[] addits)
+        public ColorTheme(Color P, Color S, Color T, params KeyValuePair<string, Color>[] addits)
         {
             this.Primary = P;
             this.Secondary = S;
             this.Tertiary = T;
             this.Additionals = new Dictionary<string, Color>();
-            foreach (KeyValuePair<string,Color> kvp in addits)
+            foreach (KeyValuePair<string, Color> kvp in addits)
                 this.Additionals.Add(kvp.Key, kvp.Value);
         }
         /// <summary>
@@ -105,7 +114,7 @@ namespace FixUrlaub.Util
                                 int.Parse(args[2].Split(',')[1]),
                                 int.Parse(args[2].Split(',')[2]));
 
-            if(args[3] != "null")
+            if (args[3] != "null")
             {
                 Additionals = new Dictionary<string, Color>();
 
@@ -159,7 +168,7 @@ namespace FixUrlaub.Util
         /// <returns>Example: <c>ColorTheme(238,255,107;061,035,020;008,002,074;[Alert]255,000,000;[Good]000,255,000;)</c></returns>
         public override string ToString()
         {
-            if(this.Additionals == null)
+            if (this.Additionals == null)
                 return "ColorTheme(" +
                   this.Primary.R.ToString("000") + "," +
                   this.Primary.G.ToString("000") + "," +
