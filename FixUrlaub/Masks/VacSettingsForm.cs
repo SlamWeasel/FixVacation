@@ -1,4 +1,4 @@
-using FixUrlaub.Util;
+﻿using FixUrlaub.Util;
 using FixUrlaub.Controls;
 using System;
 using System.Collections.Generic;
@@ -155,6 +155,15 @@ namespace FixUrlaub.Masks
             };
             LangEnButton.MouseEnter += OnColorInvert;
             LangEnButton.MouseLeave += OnColorInvert;
+            LangEnButton.Click += (sender, e) =>
+            {
+                cfg.LanguageOverride = null;
+                cfg.CurrentLanguage = Language.English;
+
+                Controls.Clear();
+                LoadControls();
+                Invalidate();
+            };
             EnTip.SetToolTip(LangEnButton, Language.English.LangName);
 
             ToolTip DeTip = new ToolTip
@@ -187,6 +196,15 @@ namespace FixUrlaub.Masks
             };
             LangDeButton.MouseEnter += OnColorInvert;
             LangDeButton.MouseLeave += OnColorInvert;
+            LangDeButton.Click += (sender, e) =>
+            {
+                cfg.LanguageOverride = null;
+                cfg.CurrentLanguage = Language.German;
+
+                Controls.Clear();
+                LoadControls();
+                Invalidate();
+            };
             DeTip.SetToolTip(LangDeButton, Language.German.LangName);
 
             LangCustomButton = new Button()
@@ -363,7 +381,7 @@ namespace FixUrlaub.Masks
             #region Functionality
             TechLabel = new Label()
             {
-                Text = "Functionality",                             // TODO: Replace with Language Property
+                Text = lang.Config,
                 Name = "TechLabel",
                 Location = new Point(20, 240),
                 TextAlign = ContentAlignment.MiddleCenter,
@@ -373,7 +391,7 @@ namespace FixUrlaub.Masks
             };
             SQLLabel = new Label()
             {
-                Text = "Database-Connection-String-Override",       // TODO: Replace with Language Property
+                Text = lang.DB_Over,
                 Name = "SQLLabel",
                 Location = new Point(30, 275),
                 TextAlign = ContentAlignment.MiddleLeft,
@@ -390,7 +408,7 @@ namespace FixUrlaub.Masks
             };
             DirLabel = new Label()
             {
-                Text = "Directory-Override",                        // TODO: Replace with Language Property
+                Text = lang.Dir_Over,
                 Name = "DirLabel",
                 Location = new Point(30, 320),
                 TextAlign = ContentAlignment.MiddleLeft,
@@ -459,9 +477,9 @@ namespace FixUrlaub.Masks
         {
             base.OnClosing(e);
 
-            if(SQL.Text != "")
+            if (SQL.Text != "")
                 cfg.SqlConnectionString = SQL.Text;
-            if(Directory.Text != "")
+            if (Directory.Text != "")
                 cfg.DirectoryOverride = DirLabel.Text;
 
         }

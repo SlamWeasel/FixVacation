@@ -1,4 +1,4 @@
-using FixUrlaub.Util;
+﻿using FixUrlaub.Util;
 using System;
 using System.Windows.Forms;
 using System.Drawing;
@@ -62,8 +62,6 @@ namespace FixUrlaub.Masks
         public VacMainForm(ADUser u) : base("VacMainForm")
         {
             #region Child-Forms
-            vlf = new VacLeaderForm(this);
-            vcf = new VacCalendarForm(this);
             vadl = new VacADLogin(this);
             vsf = new VacSettingsForm(this, new Settings() { CurrentLanguage = Language.German, Theme = AppliedTheme});
             vsf.FormClosed += (sender, e) =>
@@ -625,12 +623,23 @@ namespace FixUrlaub.Masks
         }
         private void OnApproveClick(object sender, EventArgs e)
         {
+            vlf = new VacLeaderForm(this);
+
             vlf.ShowDialog(this);
             vlf.BringToFront();
+
+            vlf.Dispose();
+            Console.WriteLine("Disposed");
         }
         private void OnCalendarClick(object sender, EventArgs e)
         {
-            
+            vcf = new VacCalendarForm(this, vsf.cfg)
+            {
+                Location = new Point(Location.X + Width, Location.Y)
+            };
+
+            vcf.Show();
+            vcf.BringToFront();
         }
         private void OnSubmitClick(object sender, EventArgs e)
         {
@@ -660,14 +669,7 @@ namespace FixUrlaub.Masks
         {
             try
             {
-                int days = 1;
-                for (int i = 0; To1.Value.Subtract(From1.Value.AddDays(i)).Days > 0; i++)
-                {
-                    if (From1.Value.AddDays(i).DayOfWeek == DayOfWeek.Sunday || From1.Value.AddDays(i).DayOfWeek == DayOfWeek.Saturday)
-                        continue;
-                    days++;
-                }
-                Res1.Text = days.ToString();
+                Res1.Text = new DateRange(From1.Value, To1.Value).WorkDays.ToString();
 
                 Invalidate();
             }
@@ -680,14 +682,7 @@ namespace FixUrlaub.Masks
         {
             try
             {
-                int days = 1;
-                for (int i = 0; To2.Value.Subtract(From2.Value.AddDays(i)).Days > 0; i++)
-                {
-                    if (From2.Value.AddDays(i).DayOfWeek == DayOfWeek.Sunday || From2.Value.AddDays(i).DayOfWeek == DayOfWeek.Saturday)
-                        continue;
-                    days++;
-                }
-                Res2.Text = days.ToString();
+                Res2.Text = new DateRange(From2.Value, To2.Value).WorkDays.ToString();
 
                 Invalidate();
             }
@@ -700,14 +695,7 @@ namespace FixUrlaub.Masks
         {
             try
             {
-                int days = 1;
-                for (int i = 0; To3.Value.Subtract(From3.Value.AddDays(i)).Days > 0; i++)
-                {
-                    if (From3.Value.AddDays(i).DayOfWeek == DayOfWeek.Sunday || From3.Value.AddDays(i).DayOfWeek == DayOfWeek.Saturday)
-                        continue;
-                    days++;
-                }
-                Res3.Text = days.ToString();
+                Res3.Text = new DateRange(From3.Value, To3.Value).WorkDays.ToString();
 
                 Invalidate();
             }

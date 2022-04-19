@@ -8,6 +8,11 @@ namespace FixUrlaub.Masks
 {
     internal class VacLeaderForm : VacPaperForm
     {
+        private VacMainForm vacMainForm;
 
+        public VacLeaderForm(VacMainForm vacMainForm)
+        {
+            this.vacMainForm = vacMainForm;
+        }
     }
 }

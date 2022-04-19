@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace FixUrlaub.Masks
 {
-    internal class VacADLogin : VacPaperForm 
+    internal class VacADLogin : VacPaperForm
     {
+        private VacMainForm vacMainForm;
+
+        public VacADLogin(VacMainForm vacMainForm)
+        {
+            this.vacMainForm = vacMainForm;
+        }
     }
 }
