@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,7 +44,10 @@ namespace FixUrlaub.Util
             Lang,
             Custom,
             Color,
-            Pri, Sec, Tri;
+            Pri, Sec, Tri,
+            Config,
+            DB_Over,
+            Dir_Over;
 
         /// <summary>
         /// Object that reads out a language-file and houses all the text that needs to be translated
@@ -90,6 +93,9 @@ namespace FixUrlaub.Util
             Pri =               translations[i++];
             Sec =               translations[i++];
             Tri =               translations[i++];
+            Config =            translations[i++];
+            DB_Over =           translations[i++];
+            Dir_Over =          translations[i++];
         }
 
         public override string ToString()

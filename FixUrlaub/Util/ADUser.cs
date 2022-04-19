@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
@@ -16,12 +16,7 @@ namespace FixUrlaub.Util
                         ID,
                         Department;
 
-        private ADUser _leader;
-        public ADUser Leader
-        {
-            set { _leader = value; }
-            get => _leader == null ? new ADUser() : _leader;
-        }
+        public ADUser Leader;
         public bool IsLeader = false;
         public DateTime Birthday;
         public VacationInfo VI;

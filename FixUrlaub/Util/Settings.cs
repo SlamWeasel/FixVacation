@@ -59,6 +59,16 @@ namespace FixUrlaub.Util
                 UpdateConfigFile();
             }
         }
+        private string _languageOverride;
+        public string LanguageOverride
+        {
+            get => _languageOverride;
+            set
+            {
+                _languageOverride = value;
+                UpdateConfigFile();
+            }
+        }
 
 
         public Settings()
