@@ -1,4 +1,4 @@
-﻿using FixUrlaub.Util;
+using FixUrlaub.Util;
 using System;
 using System.Windows.Forms;
 using System.Drawing;
@@ -128,6 +128,7 @@ namespace FixUrlaub.Masks
                     }
                     ));
                 };
+            Utils.AddHoverPointer(SettingsIcon);
             SettingsTip.SetToolTip(SettingsIcon, lang.SettingsDesc);
             ToolTip ExitTip = new ToolTip()
             {
@@ -145,6 +146,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary
             };
             ExitIcon.Click += (object sender, EventArgs e) => this.Close();
+            Utils.AddHoverPointer(ExitIcon);
             ExitTip.SetToolTip(ExitIcon, lang.Close);
 
 
@@ -213,7 +215,7 @@ namespace FixUrlaub.Masks
             #region Textfields
             NameLineField = new SeeThroughTextBox(this)
             {
-                Text = User.FullName,
+                Text = User != null ? User.FullName : "",
                 Name = "NameLineField",
                 ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(NameLine.Location.X + NameLine.Width, 23, Width - (NameLine.Location.X + NameLine.Width) - 30, 20)
@@ -234,14 +236,14 @@ namespace FixUrlaub.Masks
             };
             IDLineField = new SeeThroughTextBox(this)
             {
-                Text = User.ID,
+                Text = User != null ? User.ID : "",
                 Name = "IDLineField",
                 ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(IDLine.Location.X + IDLine.Width, 63, Width - (IDLine.Location.X + IDLine.Width) - 30, 20)
             };
             DepLineField = new SeeThroughTextBox(this)
             {
-                Text = User.Department,
+                Text = User != null ? User.Department : "",
                 Name = "DepLineField",
                 ForeColor = AppliedTheme.Tertiary,
                 Bounds = new Rectangle(DepLine.Location.X + DepLine.Width, 103, Width - (DepLine.Location.X + DepLine.Width) - 30, 20)
@@ -579,6 +581,7 @@ namespace FixUrlaub.Masks
             Submit.Click += OnSubmitClick;
             Submit.MouseEnter += OnColorInvert;
             Submit.MouseLeave += OnColorInvert;
+            Utils.AddHoverPointer(Submit);
             Calendar = new Button()
             {
                 Text = lang.Calendar,
@@ -588,11 +591,12 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerBoldFam, 12),
                 FlatStyle = FlatStyle.Popup,
                 Bounds = new Rectangle(275, 450, 150, 40),
-                TextAlign = ContentAlignment.MiddleCenter
+                TextAlign = ContentAlignment.MiddleCenter,
             };
             Calendar.Click += OnCalendarClick;
             Calendar.MouseEnter += OnColorInvert;
             Calendar.MouseLeave += OnColorInvert;
+            Utils.AddHoverPointer(Calendar);
 
             Approve = new Button()
             {
@@ -605,17 +609,20 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(500, 450, 150, 40),
                 TextAlign = ContentAlignment.MiddleCenter,
 
-                Enabled = User.IsLeader ? true : false
+                Enabled = User != null ? (User.IsLeader ? true : false) : true
             };
             Approve.Click += OnApproveClick;
             Approve.MouseEnter += OnColorInvert;
             Approve.MouseLeave += OnColorInvert;
+            Utils.AddHoverPointer(Approve);
 
             Controls.Add(Submit);
             Controls.Add(Calendar);
             Controls.Add(Approve);
             #endregion
         }
+
+
 
         private void OnColorInvert(object sender, EventArgs e)
         {
@@ -626,10 +633,8 @@ namespace FixUrlaub.Masks
             vlf = new VacLeaderForm(this);
 
             vlf.ShowDialog(this);
-            vlf.BringToFront();
 
             vlf.Dispose();
-            Console.WriteLine("Disposed");
         }
         private void OnCalendarClick(object sender, EventArgs e)
         {
@@ -637,6 +642,7 @@ namespace FixUrlaub.Masks
             {
                 Location = new Point(Location.X + Width, Location.Y)
             };
+            vcf.FormClosed += (_, _e) => vcf.Dispose();
 
             vcf.Show();
             vcf.BringToFront();
@@ -709,6 +715,7 @@ namespace FixUrlaub.Masks
         {
             base.OnPaint(e);
 
+            AppliedTheme = vsf == null ? AppliedTheme : vsf.cfg.Theme;
 
             int SizeRatio = (int)Math.Round((Height - 470) / 30.0f);
             Pen LinePen = new Pen(AppliedTheme.Secondary, 2 + (SizeRatio / 5));
@@ -737,7 +744,7 @@ namespace FixUrlaub.Masks
                 new Font(FrutigerFam, 7 + (int)Math.Round(SizeRatio * 0.7f)),
                 new SolidBrush(AppliedTheme.Secondary),
                 new RectangleF(470 + (47 * SizeRatio), 360f + (23 * SizeRatio), Width - (470 + (47 * SizeRatio)), 100f));
-            e.Graphics.DrawString(DateTime.Now.Date.ToShortDateString() + " " + User.FullName,
+            e.Graphics.DrawString(DateTime.Now.Date.ToShortDateString() + " " + (User != null ? User.FullName : "Unknown User"),
                 new Font(FrutigerFam, 9 + (int)Math.Round(SizeRatio * 0.85f)),
                 new SolidBrush(AppliedTheme.Tertiary),
                 new RectangleF(40f + (4 * SizeRatio), 375f + (25 * SizeRatio), (250 + (25 * SizeRatio)) - (40 + (4 * SizeRatio)), 100f));
