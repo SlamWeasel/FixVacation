@@ -1,4 +1,4 @@
-﻿
+
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,19 @@ namespace FixUrlaub
     internal abstract partial class VacPaperForm : Form
     {
         public readonly ComponentResourceManager resources = new ComponentResourceManager(typeof(VacPaperForm));
-        public ColorTheme AppliedTheme;
+        private ColorTheme _appliedTheme;
+        public ColorTheme AppliedTheme
+        {
+            get => _appliedTheme;
+            set
+            {
+                _appliedTheme = value;
+                BackColor = value.Primary;
+                ForeColor = value.Secondary;
+            }
+        }
+
+
 
         public FontFamily FrutigerFam, FrutigerBoldFam;
 
@@ -73,6 +85,10 @@ namespace FixUrlaub
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
+        public void DoMouseDown(object sender, MouseEventArgs e)
+        {
+            OnMouseDown(e);
+        }
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
