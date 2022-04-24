@@ -1,4 +1,4 @@
-﻿using FixUrlaub.Util;
+using FixUrlaub.Util;
 using FixUrlaub.Controls;
 using System;
 using System.Collections.Generic;
@@ -74,6 +74,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary
             };
             ExitIcon.Click += (object sender, EventArgs e) => this.Close();
+            Utils.AddHoverPointer(ExitIcon);
             ExitTip.SetToolTip(ExitIcon, cfg.CurrentLanguage.Close);
 
             Controls.Add(ExitIcon);
@@ -164,6 +165,7 @@ namespace FixUrlaub.Masks
                 LoadControls();
                 Invalidate();
             };
+            Utils.AddHoverPointer(LangEnButton);
             EnTip.SetToolTip(LangEnButton, Language.English.LangName);
 
             ToolTip DeTip = new ToolTip
@@ -205,6 +207,7 @@ namespace FixUrlaub.Masks
                 LoadControls();
                 Invalidate();
             };
+            Utils.AddHoverPointer(LangDeButton);
             DeTip.SetToolTip(LangDeButton, Language.German.LangName);
 
             LangCustomButton = new Button()
@@ -218,6 +221,7 @@ namespace FixUrlaub.Masks
                 Font = new Font(FrutigerFam, 10)
             };
             LangCustomButton.Click += OnLangButtonCustomClick;
+            Utils.AddHoverPointer(LangCustomButton);
             #endregion
 
             #region Color
@@ -259,6 +263,7 @@ namespace FixUrlaub.Masks
                     Invalidate();
                 }
             };
+            Utils.AddHoverPointer(PriColLabel);
             PriTip.SetToolTip(PriColLabel, lang.Pri);
             ToolTip SecTip = new ToolTip()
             {
@@ -288,6 +293,7 @@ namespace FixUrlaub.Masks
                     Invalidate();
                 }
             };
+            Utils.AddHoverPointer(SecColLabel);
             SecTip.SetToolTip(SecColLabel, lang.Sec);
             ToolTip TriTip = new ToolTip()
             {
@@ -317,6 +323,7 @@ namespace FixUrlaub.Masks
                     Invalidate();
                 }
             };
+            Utils.AddHoverPointer(TriColLabel);
             TriTip.SetToolTip(TriColLabel, lang.Tri);
 
             DefColButton = new Button()
@@ -338,6 +345,7 @@ namespace FixUrlaub.Masks
                 LoadControls();
                 Invalidate();
             };
+            Utils.AddHoverPointer(DefColButton);
             WhiColButton = new Button()
             {
                 Text = "\"Paper\"",
@@ -357,6 +365,7 @@ namespace FixUrlaub.Masks
                 LoadControls();
                 Invalidate();
             };
+            Utils.AddHoverPointer(WhiColButton);
             BlaColButton = new Button()
             {
                 Text = "\"Charcoal\"",
@@ -376,6 +385,7 @@ namespace FixUrlaub.Masks
                 LoadControls();
                 Invalidate();
             };
+            Utils.AddHoverPointer(BlaColButton);
             #endregion
 
             #region Functionality
