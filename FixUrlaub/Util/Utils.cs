@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Text;
@@ -14,6 +14,10 @@ namespace FixUrlaub.Util
 {
     internal abstract class Utils
     {
-
+        public static void AddHoverPointer(Control c)
+        {
+            c.MouseEnter += (sender, e) => c.Parent.Cursor = Cursors.Hand;
+            c.MouseLeave += (sender, e) => c.Parent.Cursor = Cursors.Default;
+        }
     }
 }
