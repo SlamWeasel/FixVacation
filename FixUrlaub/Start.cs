@@ -1,4 +1,4 @@
-﻿using FixUrlaub.Masks;
+using FixUrlaub.Masks;
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
@@ -17,11 +17,11 @@ namespace FixUrlaub
         public static void Main(string[] args)
         {
             Console.WriteLine("Bruh");
-            ADUser me = new ADUser();
+            ADUser me = null;
 
             try
             {
-                //me = new ADUser("MHahn");
+                me = new ADUser("MHahn");
                 //me = new ADUser(Environment.UserName);
                 Console.WriteLine(me.FullName + " -> " + me.ID + " workin in " + me.Department + " is Leader(" + me.IsLeader.ToString() + ") and works for " + (me.Leader == null ? "" : me.Leader.FullName));
 
@@ -35,14 +35,13 @@ namespace FixUrlaub
 
             if (!File.Exists(Environment.CurrentDirectory + "\\lang-DE.txt"))
                 File.WriteAllText(Environment.CurrentDirectory + "\\lang-DE.txt",
-                    "Deutsch;Urlaubsantrag<br/>für Mitarbeiter;Tag;Tage;Name;geb. am;Kontroll-Nr.;Abteilung;Mir zustehender Urlaub für das Jahr; bereits genommen, es verbleibt ein Rest von;Heute beantrage ich den nachstehend aufgeführten Urlaub;vom;bis;Jahresurlaub;Sonderurlaub;Unbezahlter Urlaub;Begründung;Arbeitnehmer bzw. Antragsteller;Datum;Unterschrift;geprüft: Vorgesetzter;Lohn-/Personalbüro;Einreichen;Fenster schließen;Einstellungen;Ändern sie die Parameter des Programms, und sogar die Farbgebung;Kalender;Genehmigen;Sprache;Benutzerdef.;Farbschema;Hintergrundfarbe;Vordergrundfarbe;Detailfarbe;Konfiguration;Datenbank-Verbindungs-String-Override;Verzeichnis-Override");
+                    "Deutsch;Urlaubsantrag<br/>für Mitarbeiter;Tag;Tage;Name;geb. am;Kontroll-Nr.;Abteilung;Mir zustehender Urlaub für das Jahr; bereits genommen, es verbleibt ein Rest von;Heute beantrage ich den nachstehend aufgeführten Urlaub;vom;bis;Jahresurlaub;Sonderurlaub;Unbezahlter Urlaub;Begründung;Arbeitnehmer bzw. Antragsteller;Datum;Unterschrift;geprüft: Vorgesetzter;Lohn-/Personalbüro;Einreichen;Fenster schließen;Einstellungen;Ändern sie die Parameter des Programms, und sogar die Farbgebung;Kalender;Genehmigen;Sprache;Benutzerdef.;Farbschema;Hintergrundfarbe;Vordergrundfarbe;Detailfarbe;Konfiguration;Datenbank-Verbindungs-String-Override;Verzeichnis-Override;Erlauben;Ablehnen");
             if (!File.Exists(Environment.CurrentDirectory + "\\lang-EN.txt"))
                 File.WriteAllText(Environment.CurrentDirectory + "\\lang-EN.txt",
-                    "English;Vacation Request<br/>for employees;Day;Days;Name;born on;User-ID;Department;My vacation for the year;already taken, there remain;Today, I request the following vacation time;from;to;Annual leave;Special leave;Unpaid vacation;Reason;Employee or Applicant;Date;Signature;checked: Superior;Human Resources;Submit;Exit Application;Settings;Change parameters of the program and even the color theme;Calendar;Approve;Language;Custom;Color Theme;Background Color;Foreground Color;Highlight Color;Configuration;Database-Connexion-String-Override;Directory-Override");
+                    "English;Vacation Request<br/>for employees;Day;Days;Name;born on;User-ID;Department;My vacation for the year;already taken, there remain;Today, I request the following vacation time;from;to;Annual leave;Special leave;Unpaid vacation;Reason;Employee or Applicant;Date;Signature;checked: Superior;Human Resources;Submit;Exit Application;Settings;Change parameters of the program and even the color theme;Calendar;Approve;Language;Custom;Color Theme;Background Color;Foreground Color;Highlight Color;Configuration;Database-Connexion-String-Override;Directory-Override;Allow;Deny");
 
             VacMainForm v = new VacMainForm(me);
             Application.Run(v);
-
         }
     }
 }
