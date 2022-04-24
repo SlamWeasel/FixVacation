@@ -1,4 +1,4 @@
-﻿using FixUrlaub.Controls;
+using FixUrlaub.Controls;
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
@@ -29,6 +29,7 @@ namespace FixUrlaub.Masks
         public VacCalendarForm(VacMainForm vacMainForm, Settings set)
         {
             Parent = vacMainForm;
+            AppliedTheme = Parent.AppliedTheme;
             Size = new Size(600, 500);
             ObservationDate = new DateTime(2022, 04, 30);
             Selection = new DateRange();
@@ -55,6 +56,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary
             };
             ExitIcon.Click += (object sender, EventArgs e) => this.Close();
+            Utils.AddHoverPointer(ExitIcon);
             ExitTip.SetToolTip(ExitIcon, Parent.vsf.cfg.CurrentLanguage.Close);
 
             Controls.Add(ExitIcon);
@@ -81,6 +83,7 @@ namespace FixUrlaub.Masks
                 LoadControls(set);
                 Invalidate();
             };
+            Utils.AddHoverPointer(LeftLabel);
             Controls.Add(LeftLabel);
             MonthName = new Label()
             {
@@ -112,6 +115,7 @@ namespace FixUrlaub.Masks
                 LoadControls(set);
                 Invalidate();
             };
+            Utils.AddHoverPointer(RightLabel);
             Controls.Add(RightLabel);
             #endregion
 
@@ -123,6 +127,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary,
                 Font = new Font(FrutigerBoldFam, 20)
             };
+            RangeLabel.MouseDown += OnControlMouseDown;
             RangeDescLabel = new Label()
             {
                 Name = "RangeDescLabel",
@@ -130,6 +135,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary,
                 Font = new Font(FrutigerFam, 15)
             };
+            RangeDescLabel.MouseDown += OnControlMouseDown;
             TeamVacInfoLabel = new Label()
             {
                 Name = "TeamVacInfoLabel",
@@ -137,6 +143,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary,
                 Font = new Font(FrutigerFam, 15)
             };
+            TeamVacInfoLabel.MouseDown += OnControlMouseDown;
             #endregion
 
 
@@ -206,6 +213,7 @@ namespace FixUrlaub.Masks
                         if (SelectionMode)
                             ((Control)sender).Text = "";
                     };
+                    Utils.AddHoverPointer(db);
 
                     if (db.Date.Month != origin.Month)
                     {
@@ -222,6 +230,10 @@ namespace FixUrlaub.Masks
             }
         }
 
+        private void OnControlMouseDown(object sender, MouseEventArgs e)
+        {
+            DoMouseDown(sender, e);
+        }
         private void UpdateRangeInfo(Settings set)
         {
             RangeLabel.Text = Selection.ToString();
