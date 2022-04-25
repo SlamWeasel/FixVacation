@@ -48,3 +48,43 @@ WHERE
 	AND [Stage1Passed] = TRUE
 	AND [Aborted] = FALSE
 ORDER BY [JobID] ASC
+
+
+
+
+
+--CREATES
+CREATE TABLE [Teams]
+(
+	[TeamID]	int		NOT NULL,
+	[TeamName]	varchar(50)	NOT NULL,
+
+	CONSTRAINT [TeamsPK] PRIMARY KEY ([TeamID] ASC)
+);
+
+CREATE TABLE [Users]
+(
+	[UserID]	int		NOT NULL,
+	[UserName]	varchar(50)	NOT NULL,
+	[TeamID]	int		NOT NULL,
+
+	CONSTRAINT [UsersPK] PRIMARY KEY ([UserID] ASC),
+	CONSTRAINT [UsersFKTeams] FOREIGN KEY ([TeamID]) REFERENCES [Teams]([TeamID])
+);
+
+CREATE TABLE [Jobs]
+(
+	[JobID]       	bigint 		NOT NULL,
+	[Sender]      	int 		NOT NULL,
+	[StartDat]    	date 		NOT NULL,
+	[EndDat]      	date 		NOT NULL,
+	[VacAmaount]  	float 		NOT NULL,
+	[Recipient]   	int 		NOT NULL,
+	[Stage1Passed]	bit		NOT NULL,
+	[Stage2Passed]	bit		NOT NULL,
+	[Aborted]     	bit		NOT NULL,
+	
+	CONSTRAINT [JobsPK] PRIMARY KEY ([JobID] ASC),
+	CONSTRAINT [JobsFKUsersSen] FOREIGN KEY ([Sender]) REFERENCES [Users]([UserID]),
+	CONSTRAINT [JobsFKUsersRec] FOREIGN KEY ([Recipient]) REFERENCES [Users]([UserID])
+);
