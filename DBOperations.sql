@@ -10,11 +10,11 @@ WHERE
 --GetLeaderJobs
 SELECT
 	*,
-	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users.UserID] = [UserID]) AS [UserName]
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [UserID]) AS [UserName]
 FROM [Jobs]
 WHERE
 	[Recipient] = 
-		(SELECT TOP 1 [UserID] WHERE [UserName] = '')
+		(SELECT TOP 1 [UserID] FROM [Users] WHERE [UserName] = '')
 	AND [Stage1Passed] = 0
 	AND [Aborted] = 0
 ORDER BY [JobID] ASC
@@ -24,7 +24,7 @@ ORDER BY [JobID] ASC
 --GetHRJobs
 SELECT 
 	*,
-	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users.UserID] = [UserID]) AS [UserName]
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [UserID]) AS [UserName]
 FROM [Jobs] 
 WHERE 
 	[Stage1Passed] = 1
