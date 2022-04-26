@@ -67,6 +67,7 @@ CREATE TABLE [Users]
 	[UserID]	int		NOT NULL,
 	[UserName]	varchar(50)	NOT NULL,
 	[TeamID]	int		NOT NULL,
+	[Birthday]	date		NOT NULL,
 
 	CONSTRAINT [UsersPK] PRIMARY KEY ([UserID] ASC),
 	CONSTRAINT [UsersFKTeams] FOREIGN KEY ([TeamID]) REFERENCES [Teams]([TeamID])
@@ -83,8 +84,34 @@ CREATE TABLE [Jobs]
 	[Stage1Passed]	bit		NOT NULL,
 	[Stage2Passed]	bit		NOT NULL,
 	[Aborted]     	bit		NOT NULL,
+	[Reason]	varchar(50)	NULL,
 	
 	CONSTRAINT [JobsPK] PRIMARY KEY ([JobID] ASC),
 	CONSTRAINT [JobsFKUsersSen] FOREIGN KEY ([Sender]) REFERENCES [Users]([UserID]),
 	CONSTRAINT [JobsFKUsersRec] FOREIGN KEY ([Recipient]) REFERENCES [Users]([UserID])
 );
+
+
+
+
+
+--INSERTS
+INSERT INTO [Teams]
+	SELECT ROW_NUMBER() OVER(ORDER BY [MaGrp] ASC), [MaGrp] FROM [Winsped2009].[dbo].[XXAMaG];
+
+UPDATE Jobs SET Stage1Passed = 1 WHERE JobID = 1
+	
+
+
+
+
+--Checks
+--Checks if User Exists in Database
+IF EXISTS(SELECT * FROM [Users] WHERE [UserName] = '')
+BEGIN
+	SELECT 'True' AS [Bool]
+END
+ELSE
+BEING
+	SELECT 'False' AS [Bool]
+END
