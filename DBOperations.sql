@@ -15,8 +15,8 @@ FROM [Jobs]
 WHERE
 	[Recipient] = 
 		(SELECT TOP 1 [UserID] WHERE [UserName] = '')
-	AND [Stage1Passed] = FALSE
-	AND [Aborted] = FALSE
+	AND [Stage1Passed] = 0
+	AND [Aborted] = 0
 ORDER BY [JobID] ASC
 
 
@@ -27,9 +27,9 @@ SELECT
 	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users.UserID] = [UserID]) AS [UserName]
 FROM [Jobs] 
 WHERE 
-	[Stage1Passed] = TRUE
-	AND [Stage2Passed] = FALSE
-	AND [Aborted] = FALSE
+	[Stage1Passed] = 1
+	AND [Stage2Passed] = 0
+	AND [Aborted] = 0
 ORDER BY [JobID] ASC
 
 
@@ -45,8 +45,8 @@ WHERE
 			(SELECT [TeamID] FROM [Users] WHERE [UserName] = ''
 			)
 		)
-	AND [Stage1Passed] = TRUE
-	AND [Aborted] = FALSE
+	AND [Stage1Passed] = 1
+	AND [Aborted] = 0
 	AND ([StartDat] BETWEEN {ts '2022-05-01 00:00:00'} AND {ts '2022-05-30 00:00:00'} OR [EndDat] BETWEEN {ts '2022-05-01 00:00:00'} AND {ts '2022-05-30 00:00:00'})
 ORDER BY [JobID] ASC
 
