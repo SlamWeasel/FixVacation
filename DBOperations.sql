@@ -10,7 +10,8 @@ WHERE
 --GetLeaderJobs
 SELECT
 	*,
-	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [UserID]) AS [UserName]
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Sender]) AS [SenderName],
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Recipient]) AS [RecipientName]
 FROM [Jobs]
 WHERE
 	[Recipient] = 
