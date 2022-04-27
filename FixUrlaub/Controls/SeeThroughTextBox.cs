@@ -1,4 +1,4 @@
-using FixUrlaub.Masks;
+﻿using FixUrlaub.Masks;
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;

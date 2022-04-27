@@ -1,4 +1,4 @@
-using FixUrlaub.Util;
+﻿using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ namespace FixUrlaub.Controls
     internal class Job : Label
     {
         public DateRange Time;
-        public string Sender, Recipient;
+        public string Sender, Recipient, Reason = null;
         /// <summary>
-        /// flag to show the stage;
+        /// Flag to show the stage;
         /// <list type="number">
         /// <item>Has to be allowed by TeamLeader</item>
         /// <item>Has to be confirmed by HR</item>
@@ -25,34 +25,61 @@ namespace FixUrlaub.Controls
         public byte Stage;
 
         private bool _selected;
-        public bool Selected 
-        { 
+        public bool Selected
+        {
             get => _selected;
-            set 
-            { 
+            set
+            {
                 _selected = value;
                 Invalidate();
-            } 
+            }
         }
         public new VacLeaderForm Parent;
+
+        private ToolTip ReasonTip;
 
         /// <summary>
         /// A control that houses a Vacation acceptance Job and displays it
         /// </summary>
+        /// <param name="p">Parent-Form of the Job</param>
         /// <param name="ID"></param>
         /// <param name="Start"></param>
         /// <param name="End"></param>
         /// <param name="sender"></param>
         /// <param name="recipient"></param>
-        public Job(VacLeaderForm p, int ID, DateTime Start, DateTime End, string sender, string recipient, byte stage)
+        /// <param name="reason"></param>
+        /// <param name="stage">Flag to show the stage;
+        /// <list type="number">
+        /// <item>Has to be allowed by TeamLeader</item>
+        /// <item>Has to be confirmed by HR</item>
+        /// <item>Is fully allowed</item>
+        /// </list></param>
+        public Job(VacLeaderForm p, long ID, DateTime Start, DateTime End, string sender, string recipient, string reason, byte stage)
         {
+            if (reason != null && reason != "")
+            {
+                Reason = reason;
+
+                ReasonTip = new ToolTip()
+                {
+                    AutoPopDelay = 7500,
+                    InitialDelay = 500,
+                    ReshowDelay = 200,
+                    UseFading = false,
+                    UseAnimation = true,
+                    ToolTipIcon = ToolTipIcon.Info,
+                    OwnerDraw = false
+                };
+                ReasonTip.SetToolTip(this, reason);
+            }
+
             Parent = p;
             Name = "Job#\n" + ID.ToString();
             Time = new DateRange(Start, End);
             Sender = sender;
             Recipient = recipient;
             Stage = stage;
-
+            Cursor = Cursors.Hand;
 
             Size = new Size(350, 70);
             BorderStyle = BorderStyle.FixedSingle;
@@ -71,6 +98,8 @@ namespace FixUrlaub.Controls
             };
             Controls.Add(IDLabel);
             IDLabel.MouseDown += OnControlMouseDown;
+            if(Reason != null)
+                ReasonTip.SetToolTip(IDLabel, Reason);
             Label SenderLabel = new Label()
             {
                 Name = "SenderLabel",
@@ -80,6 +109,8 @@ namespace FixUrlaub.Controls
             };
             Controls.Add(SenderLabel);
             SenderLabel.MouseDown += OnControlMouseDown;
+            if (Reason != null)
+                ReasonTip.SetToolTip(SenderLabel, Reason);
             Label RangeLabel = new Label()
             {
                 Name = "RangeLabel",
@@ -89,6 +120,8 @@ namespace FixUrlaub.Controls
             };
             Controls.Add(RangeLabel);
             RangeLabel.MouseDown += OnControlMouseDown;
+            if (Reason != null)
+                ReasonTip.SetToolTip(RangeLabel, Reason);
         }
 
         private void OnControlMouseDown(object sender, MouseEventArgs e)
@@ -100,7 +133,7 @@ namespace FixUrlaub.Controls
         {
             base.OnPaint(e);
 
-            switch(Stage)
+            switch (Stage)
             {
                 case 3:
                     e.Graphics.FillRectangle(new SolidBrush(Parent.AppliedTheme.Tertiary),
@@ -122,7 +155,7 @@ namespace FixUrlaub.Controls
                     break;
             }
 
-            if(Selected)
+            if (Selected)
                 e.Graphics.DrawRectangle(new Pen(Parent.AppliedTheme.Secondary, 3),
                                         new Rectangle(0, 0, 347, 67));
         }

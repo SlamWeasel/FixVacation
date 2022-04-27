@@ -20,6 +20,32 @@ namespace FixUrlaub.Controls
         /// </summary>
         public readonly new VacCalendarForm Parent;
 
+        private string _membersVac;
+        public string MembersVac
+        {
+            get => _membersVac;
+            set
+            {
+                _membersVac = value;
+
+                if (value != null && value != "")
+                {
+                    ToolTip ReasonTip = new ToolTip()
+                    {
+                        AutoPopDelay = 20000,
+                        InitialDelay = 500,
+                        ReshowDelay = 200,
+                        UseFading = false,
+                        UseAnimation = true,
+                        ToolTipIcon = ToolTipIcon.Warning,
+                        OwnerDraw = false,
+                        ToolTipTitle = Date.ToLongDateString()
+                    };
+                    ReasonTip.SetToolTip(this, value);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates a Label, showing the DayNumber of the assigned Date in the top left
         /// </summary>
@@ -57,12 +83,12 @@ namespace FixUrlaub.Controls
                     new SolidBrush(ForeColor),
                     new PointF(5, 5));
 
-            Pen LinePen = new Pen(new SolidBrush(Parent.AppliedTheme.Secondary), 1);
+            e.Graphics.DrawRectangle(new Pen(new SolidBrush(Parent.AppliedTheme.Secondary), 1),
+                                    0, 0, Width - 1, Height - 1);
 
-            e.Graphics.DrawLine(LinePen, 0, 0, Width - 1, 0);
-            e.Graphics.DrawLine(LinePen, Width - 1, 0, Width - 1, Height - 1);
-            e.Graphics.DrawLine(LinePen, Width - 1, Height - 1, 0, Height - 1);
-            e.Graphics.DrawLine(LinePen, 0, Height - 1, 0, 0);
+            if (MembersVac != null && MembersVac != "")
+                e.Graphics.FillRectangle(new SolidBrush(Parent.AppliedTheme.Tertiary),
+                                        5, Height - 25, 20, 20);
         }
     }
 }
