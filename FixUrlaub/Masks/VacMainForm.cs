@@ -1,4 +1,4 @@
-using FixUrlaub.Util;
+﻿using FixUrlaub.Util;
 using System;
 using System.Windows.Forms;
 using System.Drawing;
@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Drawing.Drawing2D;
 using FixUrlaub.Controls;
 using System.Drawing.Imaging;
+using System.Data.SqlClient;
 
 namespace FixUrlaub.Masks
 {
@@ -16,7 +17,6 @@ namespace FixUrlaub.Masks
     {
         public VacLeaderForm vlf;
         public VacCalendarForm vcf;
-        public VacADLogin vadl;
         public VacSettingsForm vsf;
 
         public ADUser User;
@@ -46,12 +46,12 @@ namespace FixUrlaub.Masks
             UnpaidVacLabel,
             ReasonLabel,
             FromLabel, ToLabel;
-        public SeeThroughTextBox 
-            NameLineField, 
-            IDLineField, 
-            DepLineField, 
-            CurrentYearField, 
-            TakenVacField, 
+        public SeeThroughTextBox
+            NameLineField,
+            IDLineField,
+            DepLineField,
+            CurrentYearField,
+            TakenVacField,
             LeftVacField,
             Res1, Res2, Res3,
             ReasonField;
@@ -62,14 +62,13 @@ namespace FixUrlaub.Masks
         public VacMainForm(ADUser u) : base("VacMainForm")
         {
             #region Child-Forms
-            vadl = new VacADLogin(this);
-            vsf = new VacSettingsForm(this, new Settings() { CurrentLanguage = Language.German, Theme = AppliedTheme});
+            vsf = new VacSettingsForm(this, new Settings() { CurrentLanguage = Language.German, Theme = AppliedTheme });
             vsf.FormClosed += (sender, e) =>
-                {
-                    Controls.Clear();
-                    LoadControls();
-                    Invalidate();
-                };
+            {
+                Controls.Clear();
+                LoadControls();
+                Invalidate();
+            };
             #endregion
 
             Bounds = new Rectangle(200, 200, (int)Math.Round(500 * FixMath.VacationFormularAspect, 0), 500);
@@ -86,6 +85,7 @@ namespace FixUrlaub.Masks
 
             BackColor = AppliedTheme.Primary;
             ForeColor = AppliedTheme.Secondary;
+            Text = "Fixemer Vacation Formular";
 
             #region Icons
             ToolTip SettingsTip = new ToolTip()
@@ -100,34 +100,34 @@ namespace FixUrlaub.Masks
                 Name = "SettingsIcon",
                 Bounds = new Rectangle(1, 1, 30, 30)
             };
-            SettingsIcon.Paint += (object sender, PaintEventArgs e) => 
-                {
-                    // Swaps white with the Secondary Color and uses those changes attributed to draw the new bitmap
+            SettingsIcon.Paint += (object sender, PaintEventArgs e) =>
+            {
+                // Swaps white with the Secondary Color and uses those changes attributed to draw the new bitmap
 
-                    using (Bitmap bmp = ((Icon)resources.GetObject("Vac_Gear")).ToBitmap())
-                    {
-                        ColorMap[] colorMap = new ColorMap[1];
-                        colorMap[0] = new ColorMap();
-                        colorMap[0].OldColor = Color.White;
-                        colorMap[0].NewColor = AppliedTheme.Secondary;
-                        ImageAttributes attr = new ImageAttributes();
-                        attr.SetRemapTable(colorMap);
-                        
-                        Rectangle rect = new Rectangle(0, 0, ((Control)sender).Width + 10, ((Control)sender).Height + 10);
-                        e.Graphics.DrawImage(bmp, rect, 0, 0, 350, 350, GraphicsUnit.Point, attr);  // Using Point as Unit, so it renders it out smoothly
-                    }
-                };
+                using (Bitmap bmp = ((Icon)resources.GetObject("Vac_Gear")).ToBitmap())
+                {
+                    ColorMap[] colorMap = new ColorMap[1];
+                    colorMap[0] = new ColorMap();
+                    colorMap[0].OldColor = Color.White;
+                    colorMap[0].NewColor = AppliedTheme.Secondary;
+                    ImageAttributes attr = new ImageAttributes();
+                    attr.SetRemapTable(colorMap);
+
+                    Rectangle rect = new Rectangle(0, 0, ((Control)sender).Width + 10, ((Control)sender).Height + 10);
+                    e.Graphics.DrawImage(bmp, rect, 0, 0, 350, 350, GraphicsUnit.Point, attr);  // Using Point as Unit, so it renders it out smoothly
+                }
+            };
             SettingsIcon.Click += (object sender, EventArgs e) =>
+            {
+                SettingsIcon.BeginInvoke(new Action(() =>
                 {
-                    SettingsIcon.BeginInvoke(new Action(() =>
-                    {
-                        vsf.ShowDialog();
-                        vsf.BringToFront();
+                    vsf.ShowDialog();
+                    vsf.BringToFront();
 
-                        Console.WriteLine(vsf.Parent.Name);
-                    }
-                    ));
-                };
+                    Console.WriteLine(vsf.Parent.Name);
+                }
+                ));
+            };
             Utils.AddHoverPointer(SettingsIcon);
             SettingsTip.SetToolTip(SettingsIcon, lang.SettingsDesc);
             ToolTip ExitTip = new ToolTip()
@@ -231,7 +231,7 @@ namespace FixUrlaub.Masks
                 CalendarMonthBackground = AppliedTheme.Primary,
                 CalendarTitleBackColor = ColorTheme.InvertColor(AppliedTheme.Secondary),
                 CalendarTitleForeColor = AppliedTheme.Secondary,
-                Value = DateTime.Today.AddDays(30),                         // TODO: Put in Birthday Date Automatically
+                Value = User == null ? DateTime.Today : User.Birthday ?? DateTime.Today,
                 Format = DateTimePickerFormat.Short
             };
             IDLineField = new SeeThroughTextBox(this)
@@ -609,7 +609,7 @@ namespace FixUrlaub.Masks
                 Bounds = new Rectangle(500, 450, 150, 40),
                 TextAlign = ContentAlignment.MiddleCenter,
 
-                Enabled = User != null ? (User.IsLeader ? true : false) : true
+                Enabled = User != null ? User.IsLeader || User.ID == "4022" : true
             };
             Approve.Click += OnApproveClick;
             Approve.MouseEnter += OnColorInvert;
@@ -647,9 +647,54 @@ namespace FixUrlaub.Masks
             vcf.Show();
             vcf.BringToFront();
         }
+        /// <summary>
+        /// Reads out the MainForm and creates a new Job with the filled out Data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSubmitClick(object sender, EventArgs e)
         {
-            
+            //If the Field has not been filled, the Button wont to anything
+            if (((Res1.Text == "" || Res1.Text == null) && YearCheck.Checked) ||
+                ((Res2.Text == "" || Res2.Text == null) && SpecCheck.Checked) ||
+                ((Res3.Text == "" || Res3.Text == null) && UnpaidCheck.Checked))
+                return;
+
+
+            using (SqlConnection cn = new SqlConnection(Settings.sqlConnectionString))
+            using (SqlCommand cmd = new SqlCommand("" +
+                "INSERT INTO [Jobs] VALUES" +
+                "(" +
+                "    (SELECT MAX([JobID]) + 1 FROM [Jobs]), " +
+                "    " + User.ID + ", " +
+                "    {ts '" + 
+                    (YearCheck.Checked ? From1.Value.ToString("yyyy-MM-dd") + " 00:00:00'}" : SpecCheck.Checked ?
+                                         From2.Value.ToString("yyyy-MM-dd") + " 00:00:00'}" : UnpaidCheck.Checked ?
+                                         From3.Value.ToString("yyyy-MM-dd") + " 00:00:00'}" : DateTime.Today.ToString("yyyy-MM-dd") + " 00:00:00'}") + ", " +
+                "    {ts '" +
+                    (YearCheck.Checked ? To1.Value.ToString("yyyy-MM-dd") + " 00:00:00'}" : SpecCheck.Checked ?
+                                         To2.Value.ToString("yyyy-MM-dd") + " 00:00:00'}" : UnpaidCheck.Checked ?
+                                         To3.Value.ToString("yyyy-MM-dd") + " 00:00:00'}" : DateTime.Today.ToString("yyyy-MM-dd") + " 00:00:00'}") + ", " +
+                "    " + (YearCheck.Checked ? Res1.Text : SpecCheck.Checked ? Res2.Text : UnpaidCheck.Checked ? Res3.Text : "0.0") + ", " +
+                "    " + (User.Leader != null ? User.Leader.ID : "4022") + ", " +
+                "    0, 0, 0, " +
+                "    " + (ReasonField.Text == "" ? "NULL" : "'" + ReasonField.Text.Replace(',', '.') + "'") + ");" +
+                "", cn) { CommandTimeout = 600 })
+            {
+                cn.Open();
+                cmd.ExecuteNonQuery();
+            }
+
+            MessageBox.Show(
+                text:           vsf.cfg.CurrentLanguage.DoneText, 
+                caption:        vsf.cfg.CurrentLanguage.Done,
+                buttons:        MessageBoxButtons.OK,
+                icon:           MessageBoxIcon.Information,
+                defaultButton:  MessageBoxDefaultButton.Button1,
+                options:        MessageBoxOptions.DefaultDesktopOnly
+                );
+
+            this.BringToFront();
         }
 
         private void OnResTextChange(object sender, EventArgs e)
@@ -722,8 +767,8 @@ namespace FixUrlaub.Masks
 
 
             #region Drawn in Labels
-            e.Graphics.DrawString("fixemer", 
-                new Font(FrutigerBoldFam, 24 + SizeRatio), 
+            e.Graphics.DrawString("fixemer",
+                new Font(FrutigerBoldFam, 24 + SizeRatio),
                 new SolidBrush(AppliedTheme.Secondary),
                 30 + (Width / 1200 * 25),
                 20 + (Height / 1000 * 25));
@@ -783,9 +828,9 @@ namespace FixUrlaub.Masks
             #endregion
 
             #region Text Lines
-            e.Graphics.DrawLine(pen: LinePen, 
+            e.Graphics.DrawLine(pen: LinePen,
                 x1: NameLine.Location.X + NameLine.Width,
-                y1: NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5), 
+                y1: NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5),
                 x2: Width + 100,
                 y2: NameLine.Location.Y + NameLine.Height - 10 - (SizeRatio / 5));
             e.Graphics.DrawLine(pen: LinePen,
@@ -825,7 +870,7 @@ namespace FixUrlaub.Masks
                         control.Location.X + control.Width,
                         control.Location.Y);
                 }
-                if(control.Name == "ReasonField")
+                if (control.Name == "ReasonField")
                     e.Graphics.DrawLine(LinePen,
                         control.Location.X,
                         control.Location.Y + 1 + control.Height,
@@ -848,28 +893,28 @@ namespace FixUrlaub.Masks
                 "SettingsIcon"
             };
 
-            foreach(Control c in Controls)
+            foreach (Control c in Controls)
             {
-                c.Font = new Font(c.Font.FontFamily, (int) Math.Round(c.Font.Size * HeightRatio), c.Font.Style);
+                c.Font = new Font(c.Font.FontFamily, (int)Math.Round(c.Font.Size * HeightRatio), c.Font.Style);
 
                 if (ScaleBlacklist.Contains(c.Name))                        // The Fontsize always scales with the Object, but some objects need to keep their dimensions
                     continue;
 
                 c.Bounds = new Rectangle(
-                    (int)Math.Round(c.Location.X * WidthRatio), 
-                    (int)Math.Round(c.Location.Y * HeightRatio), 
-                    (int)Math.Round(c.Width * WidthRatio), 
+                    (int)Math.Round(c.Location.X * WidthRatio),
+                    (int)Math.Round(c.Location.Y * HeightRatio),
+                    (int)Math.Round(c.Width * WidthRatio),
                     (int)Math.Round(c.Height * HeightRatio));
             }
 
 
             try
             {
-                if(YearAnnouncement != null)
+                if (YearAnnouncement != null)
                     CurrentYearField.Location = new Point(YearAnnouncement.Location.X + YearAnnouncement.Width, YearAnnouncement.Location.Y);
 
-                if(SettingsIcon != null)
-                    SettingsIcon.Size = new Size((int)Math.Round(SettingsIcon.Width * HeightRatio), 
+                if (SettingsIcon != null)
+                    SettingsIcon.Size = new Size((int)Math.Round(SettingsIcon.Width * HeightRatio),
                                                 (int)Math.Round(SettingsIcon.Height * HeightRatio));
             }
             catch { }

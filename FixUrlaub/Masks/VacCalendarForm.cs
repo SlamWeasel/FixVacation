@@ -1,4 +1,4 @@
-using FixUrlaub.Controls;
+﻿using FixUrlaub.Controls;
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace FixUrlaub.Masks
         public Label
             ExitIcon,
             LeftLabel, MonthName, RightLabel,
-            RangeLabel, 
+            RangeLabel,
             RangeDescLabel,
             TeamVacInfoLabel;
 
@@ -155,19 +155,47 @@ namespace FixUrlaub.Masks
         private void LoadMonth(DateTime origin, Settings set)
         {
             DateTime First = origin.AddDays(1 - origin.Day).AddDays(
-                origin.AddDays(1 - origin.Day).DayOfWeek == 0 ? 
-                    -6 : 
+                origin.AddDays(1 - origin.Day).DayOfWeek == 0 ?
+                    -6 :
                     1 - (int)origin.AddDays(1 - origin.Day).DayOfWeek);
 
-            for(int monthweek = 0;; monthweek++)
+
+            Dictionary<string, VacationInfo> TeamVacation = Utils.GetMyTeamsVacation(Parent.User.Username, new DateRange(First, First.AddDays(31)));
+
+            for (int monthweek = 0; ; monthweek++)
             {
                 for (int weekday = 0; weekday < 7; weekday++)
                 {
-                    DateBox db = new DateBox(this, First.AddDays(weekday + (monthweek * 7)))
+                    DateTime currentDay = First.AddDays(weekday + (monthweek * 7));
+
+
+                    #region Get TeamMember-List in TeamVacation
+                    string[] Members = new string[0];
+
+                    foreach(KeyValuePair<string, VacationInfo> kv in TeamVacation)
+                    {
+                        bool isIn = false;
+
+                        foreach(KeyValuePair<DateRange, float> userVI in kv.Value.TakenDays)
+                            if(userVI.Key.IsInRange(currentDay))
+                                isIn = true;
+
+                        if (isIn)
+                        {
+                            Array.Resize(ref Members, Members.Count()+1);
+
+                            Members[Members.Count()-1] = kv.Key;
+                        }
+                    }
+                    #endregion
+
+
+                    DateBox db = new DateBox(this, currentDay)
                     {
                         Bounds = new Rectangle(20 + (weekday * 53), 20 + (monthweek * 53), 50, 50),
                         TextAlign = ContentAlignment.BottomRight,
-                        Font = new Font(FrutigerFam, 20)
+                        Font = new Font(FrutigerFam, 20),
+                        MembersVac = Members.Length > 0 ? string.Join("\n", Members) : null
                     };
                     db.Name = db.Date.Day + "|" + db.Date.Month + "|" + db.Date.Year;
                     db.Click += (sender, e) =>
@@ -178,7 +206,7 @@ namespace FixUrlaub.Masks
                                 if (c.Name.Contains("|"))
                                     c.Text = "";
 
-                                    SelectionMode = true;
+                            SelectionMode = true;
                             Selection.Start = ((DateBox)sender).Date;
                             ((Control)sender).Text = "X";
                         }
@@ -224,7 +252,7 @@ namespace FixUrlaub.Masks
                     Controls.Add(db);
                 }
 
-                if (First.AddDays(6 + (monthweek * 7)).Month > origin.Month || 
+                if (First.AddDays(6 + (monthweek * 7)).Month > origin.Month ||
                     (First.AddDays(6 + (monthweek * 7)).Month < origin.Month && First.AddDays(6 + (monthweek * 7)) > origin))
                     break;
             }

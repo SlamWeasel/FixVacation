@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using FixUrlaub.Controls;
 using FixUrlaub.Util;
+using System.Data.SqlClient;
 
 namespace FixUrlaub.Masks
 {
@@ -63,6 +64,7 @@ namespace FixUrlaub.Masks
                 ForeColor = AppliedTheme.Secondary
             };
             ExitIcon.Click += (object sender, EventArgs e) => this.Close();
+            Utils.AddHoverPointer(ExitIcon);
             ExitTip.SetToolTip(ExitIcon, vacMainForm.vsf.cfg.CurrentLanguage.Close);
 
             Controls.Add(ExitIcon);
@@ -75,8 +77,8 @@ namespace FixUrlaub.Masks
             };
             JobPanel.MouseWheel += (sender, e) =>
             {
-                if ((JobPanel.Controls[0].Location.Y < 0 || e.Delta < 0) 
-                    && (JobPanel.Controls[JobPanel.Controls.Count-1].Location.Y + JobPanel.Controls[JobPanel.Controls.Count - 1].Height > JobPanel.Height || e.Delta > 0))
+                if ((JobPanel.Controls[0].Location.Y < 0 || e.Delta < 0) &&
+                    (JobPanel.Controls[JobPanel.Controls.Count - 1].Location.Y + JobPanel.Controls[JobPanel.Controls.Count - 1].Height > JobPanel.Height || e.Delta > 0))
                     foreach (Control c in JobPanel.Controls)
                         c.Location = new Point(c.Location.X, c.Location.Y + (int)Math.Round(e.Delta / 5.0f));
             };
@@ -95,7 +97,13 @@ namespace FixUrlaub.Masks
             };
             Allow.Click += (sender, e) =>
             {
+                UpdateJob(long.Parse(SelectedJob.Name), true);
 
+                try
+                {
+                    SelectedJob.Dispose();
+                }
+                catch { }
             };
             Utils.AddHoverPointer(Allow);
             Deny = new Button()
@@ -111,10 +119,11 @@ namespace FixUrlaub.Masks
             };
             Deny.Click += (sender, e) =>
             {
+                UpdateJob(long.Parse(SelectedJob.Name), false);
+
                 try
                 {
                     SelectedJob.Dispose();
-                    //LoadJobs;                     // TODO: Deny Job in SQL and remove Control and properly reload the List
                 }
                 catch { }
 
@@ -149,20 +158,51 @@ namespace FixUrlaub.Masks
             Controls.Add(Deny);
             Controls.Add(Calendar);
 
-            LoadJobs();                             // TODO: Load Jobs from SQL
+            LoadJobs();
         }
 
         public void LoadJobs()
         {
-            for (int i = 0; i < 20; i++)
+            using (SqlConnection cn = new SqlConnection(Settings.sqlConnectionString))
+            using (SqlCommand cmd = new SqlCommand("" +
+                "SELECT" +
+                "	*," +
+                "   (SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Sender]) AS [SenderName]," +
+                "	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Recipient]) AS [RecipientName] " +
+                "FROM [Jobs] " +
+                "WHERE " +
+                "	[Recipient] = " + vacMainForm.User.ID + 
+                "	AND [Stage1Passed] = 0" +
+                "	AND [Aborted] = 0 " +
+                "ORDER BY [JobID] ASC" +
+                "", cn))
             {
-                Job job = new Job(this, i * i, DateTime.Now, DateTime.Now.AddDays(i), "EVLehmann", "JSchuler", (byte)FixMath.Clamp(i, 1, 3))
+                cn.Open();
+
+                using(SqlDataReader read = cmd.ExecuteReader())
                 {
-                    Location = new Point(5, 5 + (i * 75))
-                };
-                JobPanel.Controls.Add(job);
-                job.MouseDown += OnJobMouseDown;
-                Utils.AddHoverPointer(job);
+                    int i = 0;
+
+                    while (read.Read())
+                    {
+                        Job job = new Job(p: this, 
+                            ID:         read.GetInt64(0), 
+                            Start:      read.GetDateTime(2), 
+                            End:        read.GetDateTime(3), 
+                            sender:     read.GetString(10), 
+                            recipient:  read.GetString(11), 
+                            reason:     read.IsDBNull(9) ? null : read.GetString(9), 
+                            stage: (byte)(Convert.ToByte(read.GetBoolean(6)) + Convert.ToByte(read.GetBoolean(7)) + 1))
+                        {
+                            Location = new Point(5, 5 + (i * 75)),
+                            Name = read.GetInt64(0).ToString()
+                        };
+                        JobPanel.Controls.Add(job);
+                        job.MouseDown += OnJobMouseDown;
+
+                        i++;
+                    }
+                }
             }
         }
 
@@ -177,6 +217,28 @@ namespace FixUrlaub.Masks
             {
                 _selectedJob = (Job)sender;
                 _selectedJob.Select();
+            }
+        }
+
+        private void UpdateJob(long JobID, bool accepted)
+        {
+            if(accepted)
+            using (SqlConnection cn = new SqlConnection(Settings.sqlConnectionString))
+            using (SqlCommand cmd = new SqlCommand("" +
+                "UPDATE [Jobs] SET [Stage1Passed] = 1 WHERE [JobID] = " + JobID.ToString() +
+                "", cn))
+            {
+                cn.Open();
+                _ = cmd.ExecuteNonQuery();
+            }
+            else
+            using (SqlConnection cn = new SqlConnection(Settings.sqlConnectionString))
+            using (SqlCommand cmd = new SqlCommand("" +
+                "UPDATE [Jobs] SET [Aborted] = 1 WHERE [JobID] = " + JobID.ToString() +
+                "", cn))
+            {
+                cn.Open();
+                _ = cmd.ExecuteNonQuery();
             }
         }
     }
