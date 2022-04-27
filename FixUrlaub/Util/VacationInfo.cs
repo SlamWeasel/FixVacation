@@ -13,7 +13,7 @@ namespace FixUrlaub.Util
         /// <summary>
         /// Dictionary of taken Days. Can also include half days
         /// </summary>
-        public Dictionary<DateTime, float> TakenDays;
+        public Dictionary<DateRange, float> TakenDays;
 
         /// <summary>
         /// Represents Data or Information about the Vacation of a User
@@ -21,17 +21,11 @@ namespace FixUrlaub.Util
         public VacationInfo()
         {
             TotalDays = 0;
-            TakenDays = new Dictionary<DateTime, float>();
+            TakenDays = new Dictionary<DateRange, float>();
         }
-
-        public bool IsDayTaken(DateTime d)
-            => TakenDays.ContainsKey(d);
-        public bool EnoughDaysLeft(float DaysAmount)
+        public VacationInfo(DateRange range, float rangeAmount) : this()
         {
-            float total = 0f;
-            foreach (KeyValuePair<DateTime, float> day in TakenDays)
-                total += day.Value;
-            return TotalDays - total >= DaysAmount;
+            TakenDays.Add(range, rangeAmount);
         }
     }
 }

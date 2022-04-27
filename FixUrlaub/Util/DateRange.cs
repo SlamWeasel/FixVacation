@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FixUrlaub.Util
 {
+    /// <summary>
+    /// Represents a Start and and End <see cref="DateTime"/> to form a Timespan
+    /// </summary>
     internal class DateRange
     {
         public DateTime Start;
@@ -91,13 +94,19 @@ namespace FixUrlaub.Util
         public override string ToString()
             => Start.ToString("d") + " - " + End.ToString("d");
         /// <summary>
-        /// Creates a DateRange from a string, the way it also gets turned to a string <para>"03.05.2022 - 08.05.2022" -> <see cref="DateRange"/></para>
+        /// Creates a DateRange from a string, the way it also gets turned to a string
         /// </summary>
         /// <param name="datestring"></param>
-        /// <returns></returns>
+        /// <returns>"03.05.2022 - 08.05.2022" -> <see cref="DateRange"/>()</returns>
         public static DateRange FromString(string datestring)
             => new DateRange(
                 DateTime.Parse(datestring.Split(" - ".ToCharArray())[0]),
                 DateTime.Parse(datestring.Split(" - ".ToCharArray())[1]));
+        /// <summary>
+        /// Creates two SQL-Transcript-Timestamps and binds them with <c>AND</c>. Used with a <c>BETWEEN</c> to see if a given date lies in a gives DateRange
+        /// </summary>
+        /// <returns>f.e. {ts '2022-05-01 00:00:00'} AND {ts '2022-05-30 00:00:00'}</returns>
+        public string ToSqlTimestampRange()
+            => " {ts '" + Start.ToString("yyyy-MM-dd") + " 00:00:00'} AND {ts '" + End.ToString("yyyy-MM-dd") + "  00:00:00'} ";
     }
 }

@@ -29,6 +29,8 @@ namespace FixUrlaub.Util
             }
         }
 
+        public static string sqlConnectionString = @"Data Source=NT-WINSPEDTEST2\WINSPEDTEST2;Initial Catalog=FixVacation;User ID=gobabygo;Password=comeback";
+
         private string _sqlConnectionString;
         public string SqlConnectionString
         {
