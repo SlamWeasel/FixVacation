@@ -117,3 +117,49 @@ ELSE
 BEING
 	SELECT 'False' AS [Bool]
 END
+
+
+
+
+
+
+--Scribbles
+SELECT * FROM Jobs
+SELECT * FROM Users
+SELECT * FROM Teams
+
+SELECT
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Sender]) AS [UserName],
+	[StartDat],
+	[EndDat],
+	FORMAT([VacAmount], 'N', 'en-us') AS VacAmount
+FROM [Jobs]
+WHERE
+	[Sender] IN 
+		(SELECT [UserID] FROM [Users] WHERE [TeamID] = 
+			(SELECT [TeamID] FROM [Users] WHERE [UserName] = 'EVLehmann'
+			)
+		)
+	AND [Stage1Passed] = 1
+	AND [Aborted] = 0
+	AND ([StartDat] BETWEEN {ts '2022-05-01 00:00:00'} AND {ts '2022-05-30 00:00:00'} OR [EndDat] BETWEEN {ts '2022-05-01 00:00:00'} AND {ts '2022-05-30 00:00:00'})
+ORDER BY [JobID] ASC
+
+UPDATE Jobs SET Stage1Passed = 1 WHERE JobID = 1
+
+SELECT MAX(JobID) + 1 FROM Jobs
+
+DELETE FROM Jobs WHERE JobID = 4
+
+
+SELECT
+	*,
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Sender]) AS [SenderName],
+	(SELECT TOP 1 [UserName] FROM [Users] WHERE [Users].[UserID] = [Recipient]) AS [RecipientName]
+FROM [Jobs]
+WHERE
+	[Recipient] = 
+		(SELECT TOP 1 [UserID] FROM [Users] WHERE [UserName] = 'JSchuler')
+	AND [Stage1Passed] = 0
+	AND [Aborted] = 0
+ORDER BY [JobID] ASC
