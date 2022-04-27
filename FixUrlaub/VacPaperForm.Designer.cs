@@ -29,7 +29,8 @@ namespace FixUrlaub {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal VacPaperForm() :this("Main"){
+        internal VacPaperForm() : this("Main") 
+        {
         }
         
         /// <summary>
@@ -57,6 +58,16 @@ namespace FixUrlaub {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+        /// </summary>
+        internal static System.Drawing.Icon FixVac {
+            get {
+                object obj = ResourceManager.GetObject("FixVac", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

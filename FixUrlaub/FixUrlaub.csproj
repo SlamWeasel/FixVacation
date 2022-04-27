@@ -36,15 +36,27 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>FixUrlaub.Start</StartupObject>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>Resources\FixVac.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="App.config" />
     <None Include="Resources\Frutiger.ttf" />
     <None Include="Resources\Frutiger_bold.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DateBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Job.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\SeeThroughTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -67,12 +79,14 @@
     <Compile Include="Start.cs" />
     <Compile Include="Util\ADUser.cs" />
     <Compile Include="Util\ColorTheme.cs" />
+    <Compile Include="Util\DateRange.cs" />
     <Compile Include="Util\FixMath.cs" />
     <Compile Include="Util\Language.cs" />
     <Compile Include="Util\PropertyValue.cs" />
     <Compile Include="Util\Settings.cs" />
     <Compile Include="Util\Utils.cs" />
     <Compile Include="Util\VacationInfo.cs" />
+    <Compile Include="Util\ValuePair.cs" />
     <Compile Include="VacPaperForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +114,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Vac_Gear.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\FixVac.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

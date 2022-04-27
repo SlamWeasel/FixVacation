@@ -1,4 +1,4 @@
-
+﻿
 using FixUrlaub.Util;
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,8 @@ namespace FixUrlaub
 
         public VacPaperForm(string t)
         {
-            // Reads the two Fonts as pure Memorystream from the Resource-File and adds them to two Collections (adding to a singular one doesnt seem to work)
+            // Reads the two Fonts as pure Memorystream from the Resource-File
+            // and adds them to two Collections (adding to a singular one doesnt seem to work)
 
             using (PrivateFontCollection collection = new PrivateFontCollection(), collection2 = new PrivateFontCollection())
             {
@@ -44,11 +45,11 @@ namespace FixUrlaub
                 {
                     fixed (byte* pFontData = (byte[])resources.GetObject("Frutiger"))
                     {
-                        collection.AddMemoryFont((System.IntPtr)pFontData, ((byte[])resources.GetObject("Frutiger")).Length);
+                        collection.AddMemoryFont((IntPtr)pFontData, ((byte[])resources.GetObject("Frutiger")).Length);
                     }
                     fixed (byte* pFontBData = (byte[])resources.GetObject("Frutiger_bold"))
                     {
-                        collection2.AddMemoryFont((System.IntPtr)pFontBData, ((byte[])resources.GetObject("Frutiger_bold")).Length);
+                        collection2.AddMemoryFont((IntPtr)pFontBData, ((byte[])resources.GetObject("Frutiger_bold")).Length);
                     }
                 }
 
@@ -61,6 +62,7 @@ namespace FixUrlaub
             AppliedTheme = ColorTheme.Default;
             BackColor = AppliedTheme.Primary;
             ForeColor = AppliedTheme.Secondary;
+            Icon = (Icon)resources.GetObject("FixVac");
         }
 
         protected override void OnPaint(PaintEventArgs e)
